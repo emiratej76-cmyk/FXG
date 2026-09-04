@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sporty Daily Auto</title>
+<style>
+body{font-family:Arial; background:#0f172a; color:white; margin:0; padding:20px; text-align:center}
+.card{background:#1e293b; border-radius:20px; padding:20px; margin:15px auto; max-width:420px}
+button{background:#22c55e; border:none; padding:12px 18px; border-radius:12px; font-weight:bold; margin:5px; color:white; cursor:pointer}
+button.red{background:#ef4444} button.blue{background:#3b82f6}
+.points{color:#fbbf24; font-size:18px}
+</style>
+</head>
+<body>
+<h2 style="color:#22c55e">⚽ MY SPORTY - AUTO DAILY</h2>
+<div class="points">📅 Date: <span id="today"></span> | Coins: <span id="coins">1000</span></div>
+<p style="font-size:12px;color:#94a3b8">FUN POINTS ONLY - NO REAL MONEY</p>
+
+<div class="card">
+<div id="match" style="font-size:22px; font-weight:bold; margin-bottom:15px"></div>
+<button id="btn1" class="blue"></button>
+<button id="btn2" class="red"></button>
+<button id="btnDraw">Draw - 100</button>
+<div id="result" style="margin-top:15px; font-weight:bold; min-height:20px"></div>
+</div>
+
+<script>
+// LIST OF MATCHES - WILL AUTO CHANGE EVERY DAY
+const matches = [
+ ["Real Madrid","Barcelona"],
+ ["Pakhtakor","Nasaf"],
+ ["Man City","Arsenal"],
+ ["PSG","Bayern"],
+ ["Uzbekistan","Kazakhstan"],
+ ["Liverpool","Chelsea"],
+ ["Inter Milan","AC Milan"]
+];
+
+let coins = localStorage.getItem('funCoins')? parseInt(localStorage.getItem('funCoins')) : 1000;
+let lastDate = localStorage.getItem('lastDate');
+let today = new Date().toDateString();
+document.getElementById('today').innerText = today;
+document.getElementById('coins').innerText = coins;
+
+// RESET CHECK EVERYDAY
+if(lastDate!== today){
+ // new day - give 100 bonus fun coins
+ coins += 100;
+ localStorage.setItem('funCoins', coins);
+ localStorage.setItem('lastDate', today);
+}
+
+// PICK MATCH BASED ON DATE - SAME FOR EVERYONE, CHANGES DAILY
+let dayIndex = new Date().getDate() % matches.length; // 0-6 based on date
+let todayMatch = matches[dayIndex];
+document.getElementById('match').innerHTML = `${todayMatch[0]} <span style="color:#fbbf24">VS</span> ${todayMatch[1]}`;
+document.getElementById('btn1').innerText = todayMatch[0] + " - 100";
+document.getElementById('btn2').innerText = todayMatch[1] + " - 100";
+document.getElementById('btn1').onclick = () => bet(todayMatch[0], 100);
+document.getElementById('btn2').onclick = () => bet(todayMatch[1], 100);
+
+function bet(team, amount){
+ if(coins < amount){ alert("No fun coins left! Wait tomorrow for bonus"); return; }
+ coins -= amount;
+ let winner = [todayMatch[0], todayMatch[1], "Draw"][Math.floor(Math.random()*3)];
+ let msg = team===winner? `✅ WIN! Winner: ${winner}. +${amount*2} coins` : `❌ LOSE! Winner: ${winner}. -${amount} coins`;
+ if(team===winner) coins += amount*2;
+ localStorage.setItem('funCoins', coins);
+ document.getElementById('coins').innerText = coins;
+ document.getElementById('result').innerText = msg;
+}
+document.getElementById('btnDraw').onclick = () => bet('Draw', 100);
+</script>
+</body>
+</html>
