@@ -1,89 +1,195 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SPORTY - Home</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SPORTY - Fun Points</title>
 <style>
-body{margin:0; font-family:Arial; background:#0a0f1e; color:white; padding-bottom:90px}
-.header{background:#1a2b4d; padding:12px; display:flex; justify-content:space-between; position:sticky; top:0; z-index:10}
-.nav{display:flex; gap:8px; background:#132040; padding:10px; overflow-x:auto}
-.nav span{padding:6px 14px; background:#1e3a5f; border-radius:20px; font-size:13px; white-space:nowrap}
+body{margin:0; font-family:Arial; background:#0a0f1e; color:white; padding-bottom:100px}
+.header{background:#1a2b4d; padding:12px 15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10}
+.nav{display:flex; gap:6px; background:#132040; padding:8px; overflow-x:auto}
+.nav span{padding:6px 12px; background:#1e3a5f; border-radius:20px; font-size:12px; white-space:nowrap}
+.tabs{display:flex; background:#0f1c36; padding:8px; gap:8px; position:sticky; top:50px; z-index:9}
+.tabs button{flex:1; padding:10px; border-radius:20px; border:none; font-weight:bold; font-size:13px; cursor:pointer}
 .card{background:#17233f; margin:10px; border-radius:12px; padding:12px}
 .match{padding:12px 0; border-bottom:1px solid #1e3a5f}
+.match:last-child{border:none}
 .odds{display:flex; gap:6px; margin-top:8px}
-.odds button{background:#25385f; border:1px solid #344d7c; color:white; padding:8px; border-radius:8px; flex:1}
+.odds button{background:#25385f; border:1px solid #344d7c; color:white; padding:10px 4px; border-radius:8px; flex:1; font-size:12px; cursor:pointer}
 .odds button.selected{background:#22c55e; color:black; font-weight:bold; border-color:#22c55e}
-.betslip{position:fixed; bottom:0; left:0; right:0; background:#1a2b4d; border-top:2px solid #22c55e; padding:12px; border-radius:16px 16px 0 0; transform:translateY(100%); transition:0.3s}
+.betslip{position:fixed; bottom:0; left:0; right:0; background:#1a2b4d; border-top:2px solid #22c55e; padding:12px; border-radius:16px 16px 0 0; transform:translateY(100%); transition:0.3s; z-index:20}
 .betslip.show{transform:translateY(0)}
-.betslip button{width:100%; padding:14px; border:none; border-radius:10px; font-weight:bold; font-size:16px}
-.place{background:#22c55e}
+.place{width:100%; padding:14px; border:none; border-radius:10px; font-weight:bold; font-size:16px; background:#22c55e; cursor:pointer}
+.small{font-size:11px; color:#64748b; text-align:center; padding:10px}
 </style>
 </head>
 <body>
+
 <div class="header"><b style="color:#22c55e">⚽ SPORTY</b><div>💰 <span id="coins">1000</span> FUN</div></div>
-<div class="nav"><span>Live</span><span>Uzbek League</span><span style="background:#22c55e;color:black">Premier</span><span>La Liga</span><span>UCL</span></div>
-<div style="background:#22c55e; margin:10px; border-radius:12px; padding:12px; text-align:center; font-weight:bold; color:black">FUN POINTS ONLY - NO REAL MONEY</div>
+<div class="nav"><span>Live</span><span>Uzbek League</span><span style="background:#22c55e; color:black">Premier</span><span>La Liga</span><span>UCL</span></div>
 
+<div class="tabs">
+<button onclick="showPage('home')" id="tabHome" style="background:#22c55e; color:black">Home</button>
+<button onclick="showPage('bets')" id="tabBets" style="background:#1e3a5f; color:white">My Bets</button>
+<button onclick="showPage('deposit')" id="tabDeposit" style="background:#1e3a5f; color:white">Deposit FUN</button>
+</div>
+
+<div style="background:#22c55e; margin:10px; border-radius:12px; padding:12px; text-align:center; font-weight:bold; color:black">🎉 FUN POINTS ONLY - NO REAL MONEY - GAME ONLY</div>
+
+<!-- HOME PAGE -->
+<div id="pageHome">
+<div class="card"><div id="matches"></div></div>
+</div>
+
+<!-- MY BETS PAGE -->
+<div id="pageBets" style="display:none">
 <div class="card">
-<div id="matches"></div>
+<h3 style="margin:5px 0">📋 My Ongoing & History Bets</h3>
+<div id="betsList" style="margin-top:10px">No bets yet - go place a bet!</div>
+<button onclick="clearAllBets()" style="background:#ef4444; color:white; border:none; padding:8px 15px; border-radius:8px; margin-top:15px; font-size:12px">Clear History</button>
+</div>
 </div>
 
-<div class="betslip" id="slip">
-<div style="display:flex; justify-content:space-between"><b>Betslip (<span id="count">0</span>)</b><span onclick="clearSlip()" style="color:#ef4444">Clear</span></div>
-<div id="slipList" style="margin:10px 0; font-size:13px"></div>
-<div style="display:flex; gap:10px; margin:10px 0"><span>Stake: 100 fun coins</span><span style="margin-left:auto">To win: <b id="toWin" style="color:#22c55e">0</b></span></div>
-<button class="place" onclick="placeBet()">PLACE BET - 100 FUN COINS</button>
-<div style="font-size:11px; text-align:center; margin-top:8px; color:#94a3b8">This is a game - no real money</div>
+<!-- DEPOSIT FUN PAGE -->
+<div id="pageDeposit" style="display:none">
+<div class="card" style="text-align:center">
+<h3>💰 Add Fun Coins (Free)</h3>
+<p style="font-size:13px; color:#94a3b8">NOT real money - just game points. Cannot cash out.</p>
+<p>Your Balance: <b id="coins2" style="color:#22c55e; font-size:20px">1000</b> FUN</p>
+<button onclick="addFun(500)" style="background:#25385f; color:white; padding:15px; width:100%; border:1px solid #344d7c; border-radius:12px; font-weight:bold; margin:6px 0">+500 FUN Coins - FREE</button>
+<button onclick="addFun(1000)" style="background:#fbbf24; color:black; padding:15px; width:100%; border:none; border-radius:12px; font-weight:bold; margin:6px 0">+1000 FUN Coins - FREE</button>
+<button onclick="addFun(5000)" style="background:#22c55e; color:black; padding:15px; width:100%; border:none; border-radius:12px; font-weight:bold; margin:6px 0">+5000 FUN Coins - BONUS</button>
+<p style="font-size:11px; color:#64748b; margin-top:15px">This app uses virtual points only. No real deposit, no real money. For learning & fun with friends.</p>
 </div>
+</div>
+
+<!-- BETSLIP -->
+<div class="betslip" id="slip">
+<div style="display:flex; justify-content:space-between; align-items:center"><b>Betslip (<span id="count">0</span>)</b><span onclick="clearSlip()" style="color:#ef4444; cursor:pointer; font-size:13px">Clear ✕</span></div>
+<div id="slipList" style="margin:10px 0; font-size:13px; max-height:80px; overflow-y:auto"></div>
+<div style="display:flex; gap:10px; margin:10px 0; font-size:13px"><span>Stake: 100 FUN</span><span style="margin-left:auto">Potential Win: <b id="toWin" style="color:#22c55e">0</b></span></div>
+<button class="place" onclick="placeBet()">PLACE BET - 100 FUN COINS</button>
+<div class="small">FUN POINTS ONLY - No real gambling</div>
+</div>
+
+<div class="small">Built on HP Windows | miratej76-cmyk.github.io<br>FUN GAME - NO REAL MONEY - NO CASHOUT</div>
 
 <script>
-let coins=parseInt(localStorage.getItem('funCoins')||'1000'); if(coins<=0) coins=1000;
-document.getElementById('coins').innerText=coins;
+let coins = parseInt(localStorage.getItem('funCoins')||'1000');
+if(coins<=0) coins=1000;
+let myBets = JSON.parse(localStorage.getItem('myBets')||'[]');
 let slip=[];
+
 const games=[
- {home:"Liverpool", away:"Chelsea", time:"Today 19:00", league:"Premier", o1:2.1, oX:3.2, o2:2.8},
- {home:"Man City", away:"Arsenal", time:"Today 21:30", league:"Premier", o1:1.9, oX:3.0, o2:4.1},
- {home:"Pakhtakor", away:"Nasaf", time:"UPL Today", league:"Uzbek", o1:2.5, oX:2.9, o2:2.6},
- {home:"Real Madrid", away:"Barcelona", time:"Tomorrow 20:00", league:"La Liga", o1:2.4, oX:3.4, o2:2.7}
+ {home:"Liverpool", away:"Chelsea", time:"Today 19:00", league:"Premier - Today", o1:2.1, oX:3.2, o2:2.8},
+ {home:"Man City", away:"Arsenal", time:"Today 21:30", league:"Premier - Today", o1:1.9, oX:3.0, o2:4.1},
+ {home:"Pakhtakor", away:"Nasaf", time:"UPL Today", league:"Uzbek - UPL Today", o1:2.5, oX:2.9, o2:2.6},
+ {home:"Real Madrid", away:"Barcelona", time:"Tomorrow 20:00", league:"La Liga - Tomorrow", o1:2.4, oX:3.4, o2:2.7}
 ];
-function render(){
- let h=""; games.forEach((g,i)=>{
-  h+=`<div class="match"><div style="font-size:12px;color:#94a3b8">${g.league} - ${g.time}</div><div style="font-weight:bold;margin:4px 0">${g.home} vs ${g.away}</div><div class="odds">
-  <button id="b${i}_1" onclick="addBet(${i},'1',${g.o1},'${g.home}')">${g.home.slice(0,3)}<br>${g.o1}</button>
-  <button id="b${i}_X" onclick="addBet(${i},'X',${g.oX},'Draw')">X<br>${g.oX}</button>
-  <button id="b${i}_2" onclick="addBet(${i},'2',${g.o2},'${g.away}')">${g.away.slice(0,3)}<br>${g.o2}</button>
-  </div></div>`;
- });
- document.getElementById('matches').innerHTML=h;
+
+function init(){
+ document.getElementById('coins').innerText=coins;
+ document.getElementById('coins2').innerText=coins;
+ renderMatches();
 }
-render();
+
+function renderMatches(){
+ let h=""; games.forEach((g,i)=>{
+  h+=`<div class="match"><div style="font-size:11px;color:#94a3b8">${g.league} - ${g.time}</div><div style="font-weight:bold; margin:4px 0">${g.home} vs ${g.away}</div><div class="odds">
+  <button id="b${i}_1" onclick="addBet(${i},'1',${g.o1},'${g.home}')">Liv<br>${g.o1}</button>
+  <button id="b${i}_X" onclick="addBet(${i},'X',${g.oX},'Draw')">X<br>${g.oX}</button>
+  <button id="b${i}_2" onclick="addBet(${i},'2',${g.o2},'Che<br>${g.o2}')">Che<br>${g.o2}</button></div></div>`;
+  // Fix button text dynamically
+ });
+ // Better rendering with correct abbreviations
+ let html=""; games.forEach((g,i)=>{
+  html+=`<div class="match"><div style="font-size:11px;color:#94a3b8">${g.league}</div><div style="font-weight:bold; margin:4px 0">${g.home} vs ${g.away}</div><div class="odds">
+  <button id="b${i}_1" onclick="addBet(${i},'1',${g.o1},'${g.home}')">${g.home.substring(0,3)}<br>${g.o1}</button>
+  <button id="b${i}_X" onclick="addBet(${i},'X',${g.oX},'Draw')">X<br>${g.oX}</button>
+  <button id="b${i}_2" onclick="addBet(${i},'2',${g.o2},'${g.away}')">${g.away.substring(0,3)}<br>${g.o2}</button></div></div>`;
+ });
+ document.getElementById('matches').innerHTML=html;
+}
 
 function addBet(gameIdx, type, odd, name){
  let id=gameIdx+"_"+type;
- if(slip.find(s=>s.id===id)){ slip=slip.filter(s=>s.id!==id); document.getElementById('b'+id).classList.remove('selected'); }
- else{
-  slip=slip.filter(s=>!s.id.startsWith(gameIdx+"_")); // remove other odds from same game
+ let existing = slip.find(s=>s.id===id);
+ if(existing){
+  slip=slip.filter(s=>s.id!==id);
+  document.getElementById('b'+id).classList.remove('selected');
+ } else {
+  slip=slip.filter(s=>!s.id.startsWith(gameIdx+"_"));
   document.querySelectorAll(`[id^="b${gameIdx}_"]`).forEach(b=>b.classList.remove('selected'));
-  slip.push({id, odd, name, game:games[gameIdx].home+" vs "+games[gameIdx].away, type});
+  slip.push({id, odd, name, game: games[gameIdx].home+" vs "+games[gameIdx].away, type});
   document.getElementById('b'+id).classList.add('selected');
  }
  updateSlip();
 }
+
 function updateSlip(){
  document.getElementById('count').innerText=slip.length;
  if(slip.length===0){ document.getElementById('slip').classList.remove('show'); return; }
  document.getElementById('slip').classList.add('show');
- let list=""; let totalOdd=1; slip.forEach(s=>{ list+=`• ${s.game} - ${s.name} @${s.odd}<br>`; totalOdd*=s.odd; });
+ let list=""; let totalOdd=1;
+ slip.forEach(s=>{ list+=`• ${s.game} - ${s.name} @${s.odd}<br>`; totalOdd*=s.odd; });
  document.getElementById('slipList').innerHTML=list;
- document.getElementById('toWin').innerText=Math.round(totalOdd*100)+" fun coins";
+ document.getElementById('toWin').innerText=Math.round(totalOdd*100)+" FUN";
 }
+
 function clearSlip(){ slip=[]; document.querySelectorAll('.odds button').forEach(b=>b.classList.remove('selected')); updateSlip(); }
+
 function placeBet(){
- if(coins<100){ alert("No coins! Reset"); return; }
+ if(coins<100){ alert("Not enough FUN coins! Go to Deposit FUN page"); showPage('deposit'); return; }
  if(slip.length===0) return;
- coins-=100; let win=Math.random()>0.45; if(win){ let total=1; slip.forEach(s=>total*=s.odd); coins+=Math.round(total*100); alert("✅ WIN! You won "+Math.round(total*100)+" fun coins!"); } else { alert("❌ LOSE! Lost 100 fun coins"); }
- localStorage.setItem('funCoins',coins); document.getElementById('coins').innerText=coins; clearSlip();
+ coins-=100;
+ let totalOdd=1; slip.forEach(s=>totalOdd*=s.odd);
+ let isWin = Math.random() > 0.45;
+ let status = isWin? "WIN ✅" : "LOSE ❌";
+ if(isWin) coins+=Math.round(totalOdd*100);
+
+ myBets.push({
+  game: slip.length>1? slip.length+" games Multi" : slip[0].game,
+  type: slip.map(s=>s.name+" @"+s.odd).join(", "),
+  stake: 100,
+  win: isWin? Math.round(totalOdd*100) : 0,
+  status: status + (isWin? " - Completed" : " - Completed"),
+  date: new Date().toLocaleString(),
+  ongoing: false
+ });
+ localStorage.setItem('myBets', JSON.stringify(myBets));
+ localStorage.setItem('funCoins', coins);
+ document.getElementById('coins').innerText=coins;
+ document.getElementById('coins2').innerText=coins;
+ alert(isWin? "✅ WIN! You won "+Math.round(totalOdd*100)+" FUN coins!" : "❌ LOSE! You lost 100 FUN - try again");
+ clearSlip();
 }
+
+function showPage(p){
+ document.getElementById('pageHome').style.display = p==='home'?'block':'none';
+ document.getElementById('pageBets').style.display = p==='bets'?'block':'none';
+ document.getElementById('pageDeposit').style.display = p==='deposit'?'block':'none';
+ document.getElementById('tabHome').style.background = p==='home'?'#22c55e':'#1e3a5f';
+ document.getElementById('tabHome').style.color = p==='home'?'black':'white';
+ document.getElementById('tabBets').style.background = p==='bets'?'#22c55e':'#1e3a5f';
+ document.getElementById('tabBets').style.color = p==='bets'?'black':'white';
+ document.getElementById('tabDeposit').style.background = p==='deposit'?'#22c55e':'#1e3a5f';
+ document.getElementById('tabDeposit').style.color = p==='deposit'?'black':'white';
+ if(p==='bets') renderBets();
+ if(p==='deposit') document.getElementById('coins2').innerText=coins;
+}
+
+function renderBets(){
+ if(myBets.length===0){ document.getElementById('betsList').innerHTML="<p style='color:#94a3b8'>No bets yet. Go to Home and tap odds to place a fun bet!</p>"; return; }
+ let h=""; myBets.slice().reverse().forEach(b=>{
+  h+=`<div style="background:#0a0f1e; padding:10px; border-radius:10px; margin:8px 0; font-size:13px; border-left:3px solid ${b.status.includes('WIN')?'#22c55e':'#ef4444'}"><b>${b.game}</b><br>${b.type}<br><small>Stake: ${b.stake} FUN | Win: ${b.win} FUN | ${b.status}<br>${b.date}</small></div>`;
+ });
+ document.getElementById('betsList').innerHTML=h;
+}
+
+function addFun(amount){ coins+=amount; localStorage.setItem('funCoins',coins); document.getElementById('coins').innerText=coins; document.getElementById('coins2').innerText=coins; alert("Added "+amount+" FUN coins! New balance: "+coins); }
+function clearAllBets(){ if(confirm("Clear all bet history?")){ myBets=[]; localStorage.setItem('myBets','[]'); renderBets(); } }
+
+init();
 </script>
 </body>
 </html>
