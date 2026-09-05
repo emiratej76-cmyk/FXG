@@ -2,130 +2,137 @@
 <html>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MY EXNESS - Demo</title>
+<title>MY EXNESS - Ghana</title>
 <style>
-body{margin:0; font-family:Arial; background:#0b0e14; color:white}
-.header{background:#12151f; padding:12px; display:flex; justify-content:space-between; align-items:center}
+body{margin:0; font-family:Arial; background:#0b0e14; color:white; padding-bottom:20px}
+.header{background:#12151f; padding:12px; display:flex; justify-content:space-between}
 .balance{color:#f0b90b; font-weight:bold}
 .card{background:#1a1e2c; margin:8px; border-radius:12px; padding:12px}
-.tabs{display:flex; gap:8px; padding:8px}
-.tabs button{flex:1; padding:10px; border:none; border-radius:8px; font-weight:bold; cursor:pointer}
-.buy{background:#0ecb81; color:white} .sell{background:#f6465d; color:white}
-.pair{padding:8px 12px; background:#242938; border-radius:20px; font-size:12px; margin:4px; display:inline-block}
-.pair.active{background:#f0b90b; color:black}
-.inputRow{display:flex; gap:10px; margin:10px 0}
-.inputRow input{flex:1; background:#0b0e14; border:1px solid #2a2e3e; color:white; padding:10px; border-radius:8px}
+.tabs{display:flex; gap:6px; padding:8px}
+.tabs button{flex:1; padding:10px; border:none; border-radius:8px; font-weight:bold}
+.buy{background:#0ecb81} .sell{background:#f6465d}
+.adminOnly{border:2px solid #f0b90b}
+input{width:100%; padding:12px; background:#0b0e14; border:1px solid #2a2e3e; color:white; border-radius:8px; margin:6px 0; box-sizing:border-box}
+.btn{width:100%; padding:14px; border:none; border-radius:10px; font-weight:bold; margin-top:8px; cursor:pointer}
 </style>
 </head>
 <body>
-<div class="header"><b style="color:#f0b90b">MY EXNESS</b><div class="balance">💰 $<span id="bal">10000</span> DEMO</div></div>
+<div class="header"><b style="color:#f0b90b">MY EXNESS GH</b><div class="balance">$<span id="bal">10000</span> DEMO</div></div>
 
-<div style="padding:8px">
-<span class="pair active" onclick="setPair('XAUUSD')">XAUUSD</span>
-<span class="pair" onclick="setPair('BTCUSD')">BTCUSD</span>
-<span class="pair" onclick="setPair('EURUSD')">EURUSD</span>
-<span class="pair" onclick="setPair('GBPUSD')">GBPUSD</span>
+<div class="tabs">
+<button onclick="showP('trade')" id="tTrade" style="background:#f0b90b; color:black">Trade</button>
+<button onclick="showP('dep')" id="tDep" style="background:#1a1e2c; color:white">Deposit</button>
+<button onclick="showP('admin')" id="tAdmin" style="background:#1a1e2c; color:white">Admin</button>
 </div>
 
-<div class="card" style="height:380px; padding:0; overflow:hidden">
-<!-- TradingView Chart -->
-<div id="tv" style="height:100%"></div>
-</div>
-
+<!-- TRADE PAGE -->
+<div id="pageTrade">
+<div class="card" style="height:300px; padding:0; overflow:hidden"><div id="tv" style="height:100%"></div></div>
 <div class="card">
-<div class="inputRow">
-<input id="lot" type="number" value="0.10" step="0.01" placeholder="Lot size">
-<input id="lev" value="1:2000" disabled>
+<div style="display:flex; gap:8px"><button class="sell tabs" style="flex:1" onclick="trade('SELL')">SELL</button><button class="buy tabs" style="flex:1" onclick="trade('BUY')">BUY XAUUSD</button></div>
+<div id="posList" style="margin-top:10px; font-size:12px">No positions</div>
 </div>
-<div class="tabs">
-<button class="sell" onclick="trade('SELL')">SELL<br><small id="sellPrice">...</small></button>
-<button class="buy" onclick="trade('BUY')">BUY<br><small id="buyPrice">...</small></button>
-</div>
-<p style="font-size:10px; color:#848e9c; text-align:center">DEMO TRADING - NO REAL MONEY - FOR LEARNING ONLY</p>
 </div>
 
-<div class="tabs">
-<button onclick="showP('pos')" id="tPos" style="background:#f0b90b; color:black">Positions</button>
-<button onclick="showP('hist')" id="tHist" style="background:#1a1e2c; color:white">History</button>
-<button onclick="showP('dep')" id="tDep" style="background:#1a1e2c; color:white">Deposit DEMO</button>
+<!-- DEPOSIT PAGE - USER REQUESTS -->
+<div id="pageDep" style="display:none">
+<div class="card">
+<h3>Deposit - Request to Admin</h3>
+<p style="font-size:12px; color:#848e9c">1. Send MoMo to admin on WhatsApp<br>2. Enter details below<br>3. Admin will approve DEMO credit</p>
+<input id="depAmount" type="number" placeholder="Amount you sent e.g. 50">
+<input id="depName" placeholder="Your MoMo Name / Transaction ID">
+<button class="btn" style="background:#f0b90b; color:black" onclick="requestDep()">SEND REQUEST TO ADMIN</button>
+<div id="myRequests" style="margin-top:15px; font-size:12px"></div>
+<p style="font-size:10px; color:#848e9c; text-align:center; margin-top:10px">DEMO ONLY - For learning. No auto money collection.</p>
+</div>
 </div>
 
-<div class="card" id="pagePos"><h4>Open Positions</h4><div id="posList">No open trades</div></div>
-<div class="card" id="pageHist" style="display:none"><h4>Trade History</h4><div id="histList">No history yet</div></div>
-<div class="card" id="pageDep" style="display:none; text-align:center">
-<h4>Add Demo Balance</h4>
-<p>Current: $<span id="bal2">10000</span> DEMO</p>
-<button onclick="addBal(1000)" style="width:100%; padding:12px; margin:5px 0; background:#1a1e2c; border:1px solid #333; color:white; border-radius:8px">+ $1,000 DEMO</button>
-<button onclick="addBal(10000)" style="width:100%; padding:12px; margin:5px 0; background:#f0b90b; border:none; color:black; border-radius:8px; font-weight:bold">+ $10,000 DEMO</button>
+<!-- ADMIN PAGE - YOU APPROVE -->
+<div id="pageAdmin" style="display:none">
+<div class="card adminOnly">
+<h3>🔐 Admin Panel - Only You</h3>
+<input id="adminPass" type="password" placeholder="Enter admin password">
+<button class="btn" style="background:#1a1e2c; border:1px solid #333; color:white" onclick="loginAdmin()">Login Admin</button>
+<div id="adminArea" style="display:none; margin-top:15px">
+<p>Welcome Admin! Approve requests:</p>
+<div id="allRequests"></div>
+<hr>
+<h4>Manual Credit</h4>
+<input id="manualUser" placeholder="User ID (use 'me' for this phone)">
+<input id="manualAmt" type="number" placeholder="Amount to add e.g. 100">
+<button class="btn" style="background:#0ecb81; color:white" onclick="manualCredit()">CREDIT DEMO BALANCE</button>
+<p>Current Balance: $<span id="balAdmin">0</span></p>
+</div>
+</div>
 </div>
 
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
 let balance = parseInt(localStorage.getItem('exBal')||'10000');
-let trades = JSON.parse(localStorage.getItem('exTrades')||'[]');
-let currentPair = "XAUUSD";
-document.getElementById('bal').innerText=balance;
-document.getElementById('bal2').innerText=balance;
+let requests = JSON.parse(localStorage.getItem('depReq')||'[]');
+let ADMIN_PASS = "admin123"; // change this!
 
-function loadChart(pair){
- new TradingView.widget({
-  autosize: true, symbol: pair, interval: "5",
-  timezone: "Asia/Tashkent", theme: "dark", style: "1",
-  locale: "en", container_id: "tv",
-  hide_top_toolbar: false
- });
- // fake price simulation for buy/sell display
- let base = pair==='XAUUSD'?2650: pair==='BTCUSD'?67000:1.08;
- document.getElementById('buyPrice').innerText = (base+0.5).toFixed(2);
- document.getElementById('sellPrice').innerText = (base-0.5).toFixed(2);
-}
-loadChart("GOLD");
-
-function setPair(p){
- currentPair=p;
- document.querySelectorAll('.pair').forEach(e=>e.classList.remove('active'));
- event.target.classList.add('active');
- loadChart(p==="XAUUSD"?"GOLD":p);
-}
-
-function trade(type){
- let lot = parseFloat(document.getElementById('lot').value)||0.1;
- if(balance<lot*10){ alert("Not enough demo balance! Add more in Deposit"); return; }
- let price = type==='BUY'? document.getElementById('buyPrice').innerText : document.getElementById('sellPrice').innerText;
- let t={id:Date.now(), pair:currentPair, type, lot, price, time:new Date().toLocaleString(), pnl: (Math.random()*20-10).toFixed(2)};
- trades.push(t);
- // simulate
- if(Math.random()>0.5) balance+= parseFloat(t.pnl);
- else balance+= parseFloat(t.pnl);
- localStorage.setItem('exBal', balance);
- localStorage.setItem('exTrades', JSON.stringify(trades));
- document.getElementById('bal').innerText=balance.toFixed(2);
- document.getElementById('bal2').innerText=balance.toFixed(2);
- renderPos();
- alert(type+" "+currentPair+" Lot "+lot+" Opened! PnL simulation: $"+t.pnl);
-}
-
-function renderPos(){
- if(trades.length===0){ document.getElementById('posList').innerHTML="No open trades"; document.getElementById('histList').innerHTML="No history yet"; return; }
- let h=""; trades.slice().reverse().forEach(t=>{
-  h+=`<div style="background:#0b0e14; padding:8px; border-radius:8px; margin:6px 0; font-size:12px; display:flex; justify-content:space-between"><div><b>${t.type} ${t.pair}</b> ${t.lot} lot @${t.price}<br><small>${t.time}</small></div><div style="color:${t.pnl>0?'#0ecb81':'#f6465d'}">$${t.pnl}</div></div>`;
- });
- document.getElementById('posList').innerHTML=h;
- document.getElementById('histList').innerHTML=h;
+function init(){
+ document.getElementById('bal').innerText=balance;
+ new TradingView.widget({autosize:true, symbol:"GOLD", interval:"5", timezone:"Africa/Accra", theme:"dark", style:"1", locale:"en", container_id:"tv"});
+ renderReq();
 }
 function showP(p){
- document.getElementById('pagePos').style.display=p==='pos'?'block':'none';
- document.getElementById('pageHist').style.display=p==='hist'?'block':'none';
+ document.getElementById('pageTrade').style.display=p==='trade'?'block':'none';
  document.getElementById('pageDep').style.display=p==='dep'?'block':'none';
- document.getElementById('tPos').style.background=p==='pos'?'#f0b90b':'#1a1e2c';
- document.getElementById('tHist').style.background=p==='hist'?'#f0b90b':'#1a1e2c';
+ document.getElementById('pageAdmin').style.display=p==='admin'?'block':'none';
+ document.getElementById('tTrade').style.background=p==='trade'?'#f0b90b':'#1a1e2c';
  document.getElementById('tDep').style.background=p==='dep'?'#f0b90b':'#1a1e2c';
- document.getElementById('tPos').style.color=p==='pos'?'black':'white';
- document.getElementById('tHist').style.color=p==='hist'?'black':'white';
+ document.getElementById('tAdmin').style.background=p==='admin'?'#f0b90b':'#1a1e2c';
+ document.getElementById('tTrade').style.color=p==='trade'?'black':'white';
  document.getElementById('tDep').style.color=p==='dep'?'black':'white';
+ document.getElementById('tAdmin').style.color=p==='admin'?'black':'white';
+ if(p==='dep') renderReq();
+ if(p==='admin') document.getElementById('balAdmin').innerText=balance;
 }
-function addBal(a){ balance+=a; localStorage.setItem('exBal',balance); document.getElementById('bal').innerText=balance; document.getElementById('bal2').innerText=balance; alert("Added $"+a+" DEMO"); }
-renderPos();
+function requestDep(){
+ let amt = document.getElementById('depAmount').value;
+ let name = document.getElementById('depName').value;
+ if(!amt||!name){ alert("Enter amount and MoMo name"); return; }
+ requests.push({id:Date.now(), amount:amt, name:name, status:"Pending", date:new Date().toLocaleString()});
+ localStorage.setItem('depReq', JSON.stringify(requests));
+ alert("Request sent to admin! Admin will approve soon. Contact admin on WhatsApp with proof.");
+ document.getElementById('depAmount').value=""; document.getElementById('depName').value="";
+ renderReq();
+}
+function renderReq(){
+ let h=""; requests.slice().reverse().forEach(r=>{
+  h+=`<div style="background:#0b0e14; padding:8px; border-radius:8px; margin:6px 0">Amount: $${r.amount} - ${r.name}<br><small>${r.date} - <b style="color:${r.status==='Approved'?'#0ecb81':'#f0b90b'}">${r.status}</b></small></div>`;
+ });
+ document.getElementById('myRequests').innerHTML = h||"No requests yet";
+ document.getElementById('allRequests').innerHTML = h||"No pending requests";
+}
+function loginAdmin(){
+ if(document.getElementById('adminPass').value===ADMIN_PASS){
+  document.getElementById('adminArea').style.display='block';
+  alert("Admin login success! Now you can approve deposits");
+  renderReq();
+ } else alert("Wrong password! Default is admin123");
+}
+function manualCredit(){
+ let amt = parseFloat(document.getElementById('manualAmt').value);
+ if(!amt){ alert("Enter amount"); return; }
+ balance+=amt;
+ localStorage.setItem('exBal', balance);
+ document.getElementById('bal').innerText=balance;
+ document.getElementById('balAdmin').innerText=balance;
+ // mark last pending as approved
+ if(requests.length>0){ requests[requests.length-1].status="Approved"; localStorage.setItem('depReq', JSON.stringify(requests)); renderReq(); }
+ alert("Credited $"+amt+" DEMO! New balance: $"+balance);
+}
+function trade(type){
+ let pnl = (Math.random()*20-10).toFixed(2);
+ balance+=parseFloat(pnl);
+ localStorage.setItem('exBal', balance);
+ document.getElementById('bal').innerText=balance.toFixed(2);
+ document.getElementById('posList').innerHTML=`<div style="background:#0b0e14; padding:8px; border-radius:8px">${type} XAUUSD - PnL: $${pnl}</div>` + document.getElementById('posList').innerHTML;
+}
+init();
 </script>
 </body>
 </html>
