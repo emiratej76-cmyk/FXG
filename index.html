@@ -2,124 +2,145 @@
 <html>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SportyBet GH - AUTO</title>
+<title>SportyBet GH</title>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
-body{margin:0;font-family:Arial;background:#e9e9e9}
-.header{background:#00b578;color:white;padding:10px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-.bal{background:white;color:#00b578;padding:6px 12px;border-radius:20px;font-weight:bold;font-size:13px}
-.match{background:white;margin:6px;border-radius:6px;padding:10px}
-.odds{display:flex;gap:6px;margin-top:8px}
-.odds button{flex:1;padding:10px;border:1px solid #ddd;background:#f8f8f8;border-radius:4px;font-weight:bold}
-.odds button.active{background:#00b578;color:white;border-color:#00b578}
-.betSlip{position:fixed;bottom:0;left:0;right:0;background:white;border-top:2px solid #00b578;padding:10px;box-shadow:0 -2px 10px rgba(0,0,0,.2)}
-.depCard{background:white;margin:10px;padding:15px;border-radius:8px}
-input{width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin:6px 0;box-sizing:border-box}
-.btn{width:100%;padding:14px;background:#00b578;color:white;border:none;border-radius:6px;font-weight:bold;font-size:16px}
+*{box-sizing:border-box}body{margin:0;font-family:Roboto,Arial;background:#f2f2f2}
+.header{background:#00a859;display:flex;align-items:center;justify-content:space-between;padding:10px 12px;color:white;position:sticky;top:0;z-index:100}
+.header b{font-size:20px;letter-spacing:.5px;font-style:italic}
+.balBtn{background:white;color:#00a859;padding:7px 14px;border-radius:20px;font-weight:800;font-size:13px;border:none}
+.nav{background:#2d2d2d;color:#aaa;display:flex;gap:18px;padding:10px 12px;font-size:14px;overflow:auto}
+.nav .active{color:#00e676;border-bottom:2px solid #00e676;padding-bottom:4px}
+.league{background:#e8e8e8;padding:6px 10px;font-size:11px;color:#555;font-weight:bold;display:flex;justify-content:space-between}
+.matchCard{background:white;border-bottom:1px solid #eee;padding:10px}
+.timeRow{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:6px}
+.team{font-size:13px;font-weight:600;color:#222}
+.oddsRow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
+.oddBox{border:1px solid #ddd;border-radius:4px;text-align:center;padding:8px 2px;background:#fafafa}
+.oddBox b{display:block;font-size:14px;margin-top:2px}
+.oddBox small{font-size:11px;color:#777}
+.oddBox.sel{background:#00a859;color:white;border-color:#00a859}
+.oddBox.sel small{color:#d0ffd0}
+.liveDot{width:6px;height:6px;background:red;border-radius:50%;display:inline-block;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:0}}
+.bottomBar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;display:flex;z-index:101}
+.bottomBar div{flex:1;text-align:center;padding:10px 0;font-size:11px;color:#666}
+.bottomBar .active{color:#00a859}
+.betSlipPop{position:fixed;bottom:48px;left:0;right:0;background:white;border-top:3px solid #00a859;padding:12px;box-shadow:0 -4px 20px rgba(0,0,0,.15)}
 </style>
 </head>
 <body>
-<div class="header">
-<b>SPORTYBET GH</b>
-<div class="bal" onclick="showDep()">GH₵<span id="bal">0.00</span> | Deposit</div>
+<div class="header"><b>SportyBet</b><button class="balBtn" onclick="openDep()">GH₵ <span id="bal">0.00</span> | Deposit</button></div>
+<div class="nav"><span class="active">Football</span><span>Live <span class="liveDot"></span></span><span>Jackpot</span><span>Virtuals</span><span>Table Tennis</span></div>
+
+<div id="main">
+<div class="league"><span>🏴󠁧󠁢󠁥󠁮󠁧󠁿 England - Premier League</span><span>1x2</span></div>
+<div id="list"></div>
 </div>
 
-<div id="matchesPage">
-<div style="background:#1a1a1a;color:white;padding:8px;display:flex;gap:10px;font-size:13px"><span style="color:#00b578;border-bottom:2px solid #00b578;padding-bottom:4px">Football</span><span>Live</span><span>Virtual</span></div>
-<div id="matchList"></div>
-<div style="height:120px"></div>
-</div>
-
-<div id="depPage" style="display:none">
-<div class="depCard">
-<h3 style="margin:0;color:#00b578">Auto Deposit - Straight to Balance</h3>
-<p style="font-size:12px">Powered by Paystack - Instant Credit</p>
-<input id="depAmount" type="number" placeholder="Amount GH₵ e.g. 10">
-<input id="userEmail" type="email" placeholder="Email">
-<button class="btn" onclick="pay()">DEPOSIT NOW - AUTO CREDIT</button>
-<p id="payStatus" style="font-size:13px;margin-top:10px"></p>
-<button style="margin-top:10px;width:100%;padding:10px;background:#eee;border:none;border-radius:6px" onclick="showMatches()">Back to Matches</button>
+<div id="depPage" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#f2f2f2;z-index:200;overflow:auto">
+<div style="background:#00a859;color:white;padding:14px;display:flex;justify-content:space-between"><b>Deposit</b><span onclick="closeDep()" style="font-size:20px">✕</span></div>
+<div style="background:white;margin:12px;padding:16px;border-radius:8px">
+<div style="color:#00a859;font-weight:bold;margin-bottom:10px">Instant Deposit - Auto Credit</div>
+<input id="depAmount" type="number" placeholder="Amount (Min 1 GHS)" style="width:100%;padding:14px;border:1px solid #ccc;border-radius:6px;margin:6px 0">
+<input id="userEmail" type="email" placeholder="Email address" style="width:100%;padding:14px;border:1px solid #ccc;border-radius:6px;margin:6px 0">
+<button onclick="pay()" style="width:100%;padding:15px;background:#00a859;color:white;border:none;border-radius:6px;font-weight:bold;font-size:16px;margin-top:10px">Pay Now</button>
+<div id="payStatus" style="margin-top:10px;font-size:13px;text-align:center"></div>
+<div style="margin-top:14px;background:#f8f8f8;padding:10px;border-radius:6px;font-size:11px;color:#666">Test Card: 4242 4242 4242 4242 | Exp 12/34 | CVV 123</div>
 </div>
 </div>
 
-<div class="betSlip" id="betSlip" style="display:none">
-<div style="display:flex;justify-content:space-between;font-size:13px"><span id="slipCount">0 Selections</span><span onclick="clearSlip()" style="color:red">Clear</span></div>
-<div id="slipOdds" style="margin:6px 0;font-weight:bold">Total Odds: 1.00</div>
-<input id="stake" type="number" placeholder="Stake GH₵" oninput="calcWin()" style="padding:8px">
-<div style="font-size:12px;margin:4px 0">Possible Win: GH₵<span id="win">0.00</span></div>
-<button class="btn" style="background:#ff7a00" onclick="placeBet()">Place Bet</button>
+<div class="betSlipPop" id="slip" style="display:none">
+<div style="display:flex;justify-content:space-between;font-size:13px"><b id="scount">0 Bet</b><span style="color:#00a859" onclick="clearSlip()">Remove All</span></div>
+<div id="sdetails" style="font-size:11px;color:#555;margin:6px 0;max-height:60px;overflow:auto"></div>
+<div style="display:flex;gap:8px;margin:8px 0"><input id="stake" type="number" placeholder="Stake" oninput="calc()" style="flex:1;padding:10px;border:1px solid #ccc;border-radius:6px"><div style="flex:1;background:#f2f2f2;border-radius:6px;padding:10px;text-align:center"><div style="font-size:11px">Odds</div><b id="sodds">1.00</b></div></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px"><span>To Win</span><b style="color:#00a859">GH₵<span id="swin">0.00</span></b></div>
+<button onclick="placeBet()" style="width:100%;background:#ff8f00;color:white;border:none;padding:14px;border-radius:6px;font-weight:bold;font-size:15px">Place Bet</button>
 </div>
+
+<div class="bottomBar"><div class="active">⚽<br>Sports</div><div>📺<br>Live</div><div>🎰<br>Jackpot</div><div>👤<br>Me</div></div>
 
 <script>
-let balance=parseFloat(localStorage.getItem('sportyBal')||'0');
+let balance=parseFloat(localStorage.getItem('sportyRealBal')||'0');
 document.getElementById('bal').innerText=balance.toFixed(2);
-let selections=[];
-let matches=[
-{name:"Man City vs Arsenal", h:"2.10", d:"3.30", a:"3.20"},
-{name:"Barcelona vs Real Madrid", h:"2.50", d:"3.40", a:"2.60"},
-{name:"Hearts vs Kotoko", h:"1.85", d:"3.10", a:"4.20"},
-{name:"Liverpool vs Chelsea", h:"1.95", d:"3.50", a:"3.80"},
-{name:"Bayern vs Dortmund", h:"1.70", d:"3.90", a:"4.50"}
+let games=[
+{lg:"England - Premier League", time:"19:30", teams:["Man City","Arsenal"], odds:[2.10,3.30,3.20]},
+{lg:"Spain - La Liga", time:"20:00", teams:["Barcelona","Real Madrid"], odds:[2.50,3.40,2.60], live:true},
+{lg:"Ghana - Premier League", time:"18:00", teams:["Hearts of Oak","Asante Kotoko"], odds:[1.85,3.10,4.20]},
+{lg:"England - Premier League", time:"21:15", teams:["Liverpool","Chelsea"], odds:[1.95,3.50,3.80]},
+{lg:"Germany - Bundesliga", time:"19:45", teams:["Bayern Munich","Dortmund"], odds:[1.70,3.90,4.50]}
 ];
-let list=document.getElementById('matchList');
-matches.forEach((m,i)=>{
- list.innerHTML+=`<div class="match"><div style="font-size:13px;font-weight:bold">${m.name}</div><div style="font-size:11px;color:gray">Today 19:00</div><div class="odds"><button onclick="addBet(${i},'1',${m.h})">1<br>${m.h}</button><button onclick="addBet(${i},'X',${m.d})">X<br>${m.d}</button><button onclick="addBet(${i},'2',${m.a})">2<br>${m.a}</button></div></div>`;
-});
-function showDep(){document.getElementById('matchesPage').style.display='none';document.getElementById('depPage').style.display='block';}
-function showMatches(){document.getElementById('depPage').style.display='none';document.getElementById('matchesPage').style.display='block';}
-function addBet(i, type, odd){
- selections.push({match:matches[i].name,type,odd});
+let sel=[];
+function render(){
+ let html=""; let lastLg="";
+ games.forEach((g,i)=>{
+  if(g.lg!=lastLg){html+=`<div class="league"><span>${g.lg.includes('England')?'🏴󠁧󠁢󠁥󠁮󠁧󠁿':g.lg.includes('Spain')?'🇪🇸':g.lg.includes('Ghana')?'🇬🇭':'🇩🇪'} ${g.lg}</span></div>`; lastLg=g.lg}
+  html+=`<div class="matchCard"><div class="timeRow"><span>${g.live?'<span class="liveDot"></span> LIVE • ':''}${g.time}</span><span>+98</span></div><div class="team">${g.teams[0]} vs ${g.teams[1]}</div><div class="oddsRow">
+  <div class="oddBox" id="b${i}0" onclick="pick(${i},0)"><small>1</small><b>${g.odds[0]}</b></div>
+  <div class="oddBox" id="b${i}1" onclick="pick(${i},1)"><small>X</small><b>${g.odds[1]}</b></div>
+  <div class="oddBox" id="b${i}2" onclick="pick(${i},2)"><small>2</small><b>${g.odds[2]}</b></div>
+  </div></div>`;
+ });
+ document.getElementById('list').innerHTML=html;
+}
+function pick(i, o){
+ let key=i+"-"+o;
+ let idx=sel.findIndex(s=>s.key==key);
+ if(idx>-1){sel.splice(idx,1); document.getElementById('b'+i+o).classList.remove('sel');}
+ else{
+  sel=sel.filter(s=>!s.key.startsWith(i+"-"));
+  document.getElementById('b'+i+'0').classList.remove('sel');
+  document.getElementById('b'+i+'1').classList.remove('sel');
+  document.getElementById('b'+i+'2').classList.remove('sel');
+  sel.push({key, match:games[i].teams[0]+" vs "+games[i].teams[1], odd:games[i].odds[o], type:["1","X","2"][o]});
+  document.getElementById('b'+i+o).classList.add('sel');
+ }
  updateSlip();
 }
 function updateSlip(){
- if(selections.length==0){document.getElementById('betSlip').style.display='none';return;}
- document.getElementById('betSlip').style.display='block';
- document.getElementById('slipCount').innerText=selections.length+" Selections";
- let total=1; selections.forEach(s=>total*=s.odd);
- document.getElementById('slipOdds').innerText="Total Odds: "+total.toFixed(2);
- calcWin();
+ if(sel.length==0){document.getElementById('slip').style.display='none';return;}
+ document.getElementById('slip').style.display='block';
+ document.getElementById('scount').innerText=sel.length+" Bets";
+ let total=1; let det=""; sel.forEach(s=>{total*=s.odd; det+=`${s.match} - ${s.type} @${s.odd}<br>`});
+ document.getElementById('sdetails').innerHTML=det;
+ document.getElementById('sodds').innerText=total.toFixed(2);
+ calc();
 }
-function calcWin(){
- let stake=parseFloat(document.getElementById('stake').value||0);
- let total=1; selections.forEach(s=>total*=s.odd);
- document.getElementById('win').innerText=(stake*total).toFixed(2);
-}
-function clearSlip(){selections=[];updateSlip();}
+function calc(){let stake=parseFloat(document.getElementById('stake').value||0); let total=1; sel.forEach(s=>total*=s.odd); document.getElementById('swin').innerText=(stake*total).toFixed(2);}
+function clearSlip(){sel=[]; document.querySelectorAll('.oddBox').forEach(e=>e.classList.remove('sel')); updateSlip();}
 function placeBet(){
  let stake=parseFloat(document.getElementById('stake').value||0);
- if(stake<1){alert("Min stake 1");return;}
- if(stake>balance){alert("Low balance, deposit!");showDep();return;}
- balance-=stake; localStorage.setItem('sportyBal',balance); document.getElementById('bal').innerText=balance.toFixed(2);
- alert("Bet Placed! Possible win: GH₵"+document.getElementById('win').innerText);
+ if(stake<1){alert("Min stake 1 GHS");return;}
+ if(stake>balance){alert("Insufficient balance! Deposit first"); openDep();return;}
+ balance-=stake; localStorage.setItem('sportyRealBal',balance); document.getElementById('bal').innerText=balance.toFixed(2);
+ let win=parseFloat(document.getElementById('swin').innerText);
+ alert("Bet Placed! Stake GH₵"+stake+" - Possible Win GH₵"+win);
+ setTimeout(()=>{ if(Math.random()>0.5){balance+=win; localStorage.setItem('sportyRealBal',balance); document.getElementById('bal').innerText=balance.toFixed(2); alert("BOOM! YOU WON GH₵"+win+" 💰"); }},2500);
  clearSlip();
- // Simulate win 50%
- setTimeout(()=>{ if(Math.random()>0.5){ let win=parseFloat(document.getElementById('win').innerText); balance+=win; localStorage.setItem('sportyBal',balance); document.getElementById('bal').innerText=balance.toFixed(2); alert("YOU WON GH₵"+win.toFixed(2)+"!!!"); }},2000);
 }
+function openDep(){document.getElementById('depPage').style.display='block';}
+function closeDep(){document.getElementById('depPage').style.display='none';}
 function pay(){
  let amount=document.getElementById('depAmount').value;
  let email=document.getElementById('userEmail').value;
  if(!amount||amount<1){alert("Min 1");return;}
  if(!email){alert("Email needed");return;}
- let handler=PaystackPop.setup({
-  key: 'REPLACE_WITH_YOUR_FULL_PK_TEST_KEY_HERE',
+ PaystackPop.setup({
+  key:sk_test_78f6e307906cf0696ed5ec7057909003a725a60f ', // <-- PASTE YOUR FULL pk_test_ HERE
   email: email,
   amount: amount*100,
   currency: 'GHS',
   ref: 'SPORTY_'+Date.now(),
-  callback:function(res){
-   document.getElementById('payStatus').innerText="Success "+res.reference+" - Crediting...";
-   setTimeout(()=>{
-    balance+=parseFloat(amount);
-    localStorage.setItem('sportyBal',balance);
-    document.getElementById('bal').innerText=balance.toFixed(2);
-    document.getElementById('payStatus').innerText="✅ GH₵"+amount+" CREDITED! Balance: "+balance.toFixed(2);
-    setTimeout(showMatches,1000);
-   },800);
+  callback:function(r){
+   document.getElementById('payStatus').innerHTML="✅ Success! Crediting...";
+   balance+=parseFloat(amount); localStorage.setItem('sportyRealBal',balance); document.getElementById('bal').innerText=balance.toFixed(2);
+   document.getElementById('payStatus').innerHTML="✅ GH₵"+amount+" CREDITED! New Balance GH₵"+balance.toFixed(2);
+   setTimeout(closeDep,1500);
   },
-  onClose:function(){document.getElementById('payStatus').innerText="Payment closed";}
- });
- handler.openIframe();
+  onClose:function(){document.getElementById('payStatus').innerText="Cancelled";}
+ }).openIframe();
 }
+render();
 </script>
 </body>
 </html>
