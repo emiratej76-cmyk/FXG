@@ -1,195 +1,131 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SPORTY - Fun Points</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MY EXNESS - Demo</title>
 <style>
-body{margin:0; font-family:Arial; background:#0a0f1e; color:white; padding-bottom:100px}
-.header{background:#1a2b4d; padding:12px 15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:10}
-.nav{display:flex; gap:6px; background:#132040; padding:8px; overflow-x:auto}
-.nav span{padding:6px 12px; background:#1e3a5f; border-radius:20px; font-size:12px; white-space:nowrap}
-.tabs{display:flex; background:#0f1c36; padding:8px; gap:8px; position:sticky; top:50px; z-index:9}
-.tabs button{flex:1; padding:10px; border-radius:20px; border:none; font-weight:bold; font-size:13px; cursor:pointer}
-.card{background:#17233f; margin:10px; border-radius:12px; padding:12px}
-.match{padding:12px 0; border-bottom:1px solid #1e3a5f}
-.match:last-child{border:none}
-.odds{display:flex; gap:6px; margin-top:8px}
-.odds button{background:#25385f; border:1px solid #344d7c; color:white; padding:10px 4px; border-radius:8px; flex:1; font-size:12px; cursor:pointer}
-.odds button.selected{background:#22c55e; color:black; font-weight:bold; border-color:#22c55e}
-.betslip{position:fixed; bottom:0; left:0; right:0; background:#1a2b4d; border-top:2px solid #22c55e; padding:12px; border-radius:16px 16px 0 0; transform:translateY(100%); transition:0.3s; z-index:20}
-.betslip.show{transform:translateY(0)}
-.place{width:100%; padding:14px; border:none; border-radius:10px; font-weight:bold; font-size:16px; background:#22c55e; cursor:pointer}
-.small{font-size:11px; color:#64748b; text-align:center; padding:10px}
+body{margin:0; font-family:Arial; background:#0b0e14; color:white}
+.header{background:#12151f; padding:12px; display:flex; justify-content:space-between; align-items:center}
+.balance{color:#f0b90b; font-weight:bold}
+.card{background:#1a1e2c; margin:8px; border-radius:12px; padding:12px}
+.tabs{display:flex; gap:8px; padding:8px}
+.tabs button{flex:1; padding:10px; border:none; border-radius:8px; font-weight:bold; cursor:pointer}
+.buy{background:#0ecb81; color:white} .sell{background:#f6465d; color:white}
+.pair{padding:8px 12px; background:#242938; border-radius:20px; font-size:12px; margin:4px; display:inline-block}
+.pair.active{background:#f0b90b; color:black}
+.inputRow{display:flex; gap:10px; margin:10px 0}
+.inputRow input{flex:1; background:#0b0e14; border:1px solid #2a2e3e; color:white; padding:10px; border-radius:8px}
 </style>
 </head>
 <body>
+<div class="header"><b style="color:#f0b90b">MY EXNESS</b><div class="balance">💰 $<span id="bal">10000</span> DEMO</div></div>
 
-<div class="header"><b style="color:#22c55e">⚽ SPORTY</b><div>💰 <span id="coins">1000</span> FUN</div></div>
-<div class="nav"><span>Live</span><span>Uzbek League</span><span style="background:#22c55e; color:black">Premier</span><span>La Liga</span><span>UCL</span></div>
+<div style="padding:8px">
+<span class="pair active" onclick="setPair('XAUUSD')">XAUUSD</span>
+<span class="pair" onclick="setPair('BTCUSD')">BTCUSD</span>
+<span class="pair" onclick="setPair('EURUSD')">EURUSD</span>
+<span class="pair" onclick="setPair('GBPUSD')">GBPUSD</span>
+</div>
+
+<div class="card" style="height:380px; padding:0; overflow:hidden">
+<!-- TradingView Chart -->
+<div id="tv" style="height:100%"></div>
+</div>
+
+<div class="card">
+<div class="inputRow">
+<input id="lot" type="number" value="0.10" step="0.01" placeholder="Lot size">
+<input id="lev" value="1:2000" disabled>
+</div>
+<div class="tabs">
+<button class="sell" onclick="trade('SELL')">SELL<br><small id="sellPrice">...</small></button>
+<button class="buy" onclick="trade('BUY')">BUY<br><small id="buyPrice">...</small></button>
+</div>
+<p style="font-size:10px; color:#848e9c; text-align:center">DEMO TRADING - NO REAL MONEY - FOR LEARNING ONLY</p>
+</div>
 
 <div class="tabs">
-<button onclick="showPage('home')" id="tabHome" style="background:#22c55e; color:black">Home</button>
-<button onclick="showPage('bets')" id="tabBets" style="background:#1e3a5f; color:white">My Bets</button>
-<button onclick="showPage('deposit')" id="tabDeposit" style="background:#1e3a5f; color:white">Deposit FUN</button>
+<button onclick="showP('pos')" id="tPos" style="background:#f0b90b; color:black">Positions</button>
+<button onclick="showP('hist')" id="tHist" style="background:#1a1e2c; color:white">History</button>
+<button onclick="showP('dep')" id="tDep" style="background:#1a1e2c; color:white">Deposit DEMO</button>
 </div>
 
-<div style="background:#22c55e; margin:10px; border-radius:12px; padding:12px; text-align:center; font-weight:bold; color:black">🎉 FUN POINTS ONLY - NO REAL MONEY - GAME ONLY</div>
-
-<!-- HOME PAGE -->
-<div id="pageHome">
-<div class="card"><div id="matches"></div></div>
+<div class="card" id="pagePos"><h4>Open Positions</h4><div id="posList">No open trades</div></div>
+<div class="card" id="pageHist" style="display:none"><h4>Trade History</h4><div id="histList">No history yet</div></div>
+<div class="card" id="pageDep" style="display:none; text-align:center">
+<h4>Add Demo Balance</h4>
+<p>Current: $<span id="bal2">10000</span> DEMO</p>
+<button onclick="addBal(1000)" style="width:100%; padding:12px; margin:5px 0; background:#1a1e2c; border:1px solid #333; color:white; border-radius:8px">+ $1,000 DEMO</button>
+<button onclick="addBal(10000)" style="width:100%; padding:12px; margin:5px 0; background:#f0b90b; border:none; color:black; border-radius:8px; font-weight:bold">+ $10,000 DEMO</button>
 </div>
 
-<!-- MY BETS PAGE -->
-<div id="pageBets" style="display:none">
-<div class="card">
-<h3 style="margin:5px 0">📋 My Ongoing & History Bets</h3>
-<div id="betsList" style="margin-top:10px">No bets yet - go place a bet!</div>
-<button onclick="clearAllBets()" style="background:#ef4444; color:white; border:none; padding:8px 15px; border-radius:8px; margin-top:15px; font-size:12px">Clear History</button>
-</div>
-</div>
-
-<!-- DEPOSIT FUN PAGE -->
-<div id="pageDeposit" style="display:none">
-<div class="card" style="text-align:center">
-<h3>💰 Add Fun Coins (Free)</h3>
-<p style="font-size:13px; color:#94a3b8">NOT real money - just game points. Cannot cash out.</p>
-<p>Your Balance: <b id="coins2" style="color:#22c55e; font-size:20px">1000</b> FUN</p>
-<button onclick="addFun(500)" style="background:#25385f; color:white; padding:15px; width:100%; border:1px solid #344d7c; border-radius:12px; font-weight:bold; margin:6px 0">+500 FUN Coins - FREE</button>
-<button onclick="addFun(1000)" style="background:#fbbf24; color:black; padding:15px; width:100%; border:none; border-radius:12px; font-weight:bold; margin:6px 0">+1000 FUN Coins - FREE</button>
-<button onclick="addFun(5000)" style="background:#22c55e; color:black; padding:15px; width:100%; border:none; border-radius:12px; font-weight:bold; margin:6px 0">+5000 FUN Coins - BONUS</button>
-<p style="font-size:11px; color:#64748b; margin-top:15px">This app uses virtual points only. No real deposit, no real money. For learning & fun with friends.</p>
-</div>
-</div>
-
-<!-- BETSLIP -->
-<div class="betslip" id="slip">
-<div style="display:flex; justify-content:space-between; align-items:center"><b>Betslip (<span id="count">0</span>)</b><span onclick="clearSlip()" style="color:#ef4444; cursor:pointer; font-size:13px">Clear ✕</span></div>
-<div id="slipList" style="margin:10px 0; font-size:13px; max-height:80px; overflow-y:auto"></div>
-<div style="display:flex; gap:10px; margin:10px 0; font-size:13px"><span>Stake: 100 FUN</span><span style="margin-left:auto">Potential Win: <b id="toWin" style="color:#22c55e">0</b></span></div>
-<button class="place" onclick="placeBet()">PLACE BET - 100 FUN COINS</button>
-<div class="small">FUN POINTS ONLY - No real gambling</div>
-</div>
-
-<div class="small">Built on HP Windows | miratej76-cmyk.github.io<br>FUN GAME - NO REAL MONEY - NO CASHOUT</div>
-
+<script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-let coins = parseInt(localStorage.getItem('funCoins')||'1000');
-if(coins<=0) coins=1000;
-let myBets = JSON.parse(localStorage.getItem('myBets')||'[]');
-let slip=[];
+let balance = parseInt(localStorage.getItem('exBal')||'10000');
+let trades = JSON.parse(localStorage.getItem('exTrades')||'[]');
+let currentPair = "XAUUSD";
+document.getElementById('bal').innerText=balance;
+document.getElementById('bal2').innerText=balance;
 
-const games=[
- {home:"Liverpool", away:"Chelsea", time:"Today 19:00", league:"Premier - Today", o1:2.1, oX:3.2, o2:2.8},
- {home:"Man City", away:"Arsenal", time:"Today 21:30", league:"Premier - Today", o1:1.9, oX:3.0, o2:4.1},
- {home:"Pakhtakor", away:"Nasaf", time:"UPL Today", league:"Uzbek - UPL Today", o1:2.5, oX:2.9, o2:2.6},
- {home:"Real Madrid", away:"Barcelona", time:"Tomorrow 20:00", league:"La Liga - Tomorrow", o1:2.4, oX:3.4, o2:2.7}
-];
-
-function init(){
- document.getElementById('coins').innerText=coins;
- document.getElementById('coins2').innerText=coins;
- renderMatches();
-}
-
-function renderMatches(){
- let h=""; games.forEach((g,i)=>{
-  h+=`<div class="match"><div style="font-size:11px;color:#94a3b8">${g.league} - ${g.time}</div><div style="font-weight:bold; margin:4px 0">${g.home} vs ${g.away}</div><div class="odds">
-  <button id="b${i}_1" onclick="addBet(${i},'1',${g.o1},'${g.home}')">Liv<br>${g.o1}</button>
-  <button id="b${i}_X" onclick="addBet(${i},'X',${g.oX},'Draw')">X<br>${g.oX}</button>
-  <button id="b${i}_2" onclick="addBet(${i},'2',${g.o2},'Che<br>${g.o2}')">Che<br>${g.o2}</button></div></div>`;
-  // Fix button text dynamically
+function loadChart(pair){
+ new TradingView.widget({
+  autosize: true, symbol: pair, interval: "5",
+  timezone: "Asia/Tashkent", theme: "dark", style: "1",
+  locale: "en", container_id: "tv",
+  hide_top_toolbar: false
  });
- // Better rendering with correct abbreviations
- let html=""; games.forEach((g,i)=>{
-  html+=`<div class="match"><div style="font-size:11px;color:#94a3b8">${g.league}</div><div style="font-weight:bold; margin:4px 0">${g.home} vs ${g.away}</div><div class="odds">
-  <button id="b${i}_1" onclick="addBet(${i},'1',${g.o1},'${g.home}')">${g.home.substring(0,3)}<br>${g.o1}</button>
-  <button id="b${i}_X" onclick="addBet(${i},'X',${g.oX},'Draw')">X<br>${g.oX}</button>
-  <button id="b${i}_2" onclick="addBet(${i},'2',${g.o2},'${g.away}')">${g.away.substring(0,3)}<br>${g.o2}</button></div></div>`;
+ // fake price simulation for buy/sell display
+ let base = pair==='XAUUSD'?2650: pair==='BTCUSD'?67000:1.08;
+ document.getElementById('buyPrice').innerText = (base+0.5).toFixed(2);
+ document.getElementById('sellPrice').innerText = (base-0.5).toFixed(2);
+}
+loadChart("GOLD");
+
+function setPair(p){
+ currentPair=p;
+ document.querySelectorAll('.pair').forEach(e=>e.classList.remove('active'));
+ event.target.classList.add('active');
+ loadChart(p==="XAUUSD"?"GOLD":p);
+}
+
+function trade(type){
+ let lot = parseFloat(document.getElementById('lot').value)||0.1;
+ if(balance<lot*10){ alert("Not enough demo balance! Add more in Deposit"); return; }
+ let price = type==='BUY'? document.getElementById('buyPrice').innerText : document.getElementById('sellPrice').innerText;
+ let t={id:Date.now(), pair:currentPair, type, lot, price, time:new Date().toLocaleString(), pnl: (Math.random()*20-10).toFixed(2)};
+ trades.push(t);
+ // simulate
+ if(Math.random()>0.5) balance+= parseFloat(t.pnl);
+ else balance+= parseFloat(t.pnl);
+ localStorage.setItem('exBal', balance);
+ localStorage.setItem('exTrades', JSON.stringify(trades));
+ document.getElementById('bal').innerText=balance.toFixed(2);
+ document.getElementById('bal2').innerText=balance.toFixed(2);
+ renderPos();
+ alert(type+" "+currentPair+" Lot "+lot+" Opened! PnL simulation: $"+t.pnl);
+}
+
+function renderPos(){
+ if(trades.length===0){ document.getElementById('posList').innerHTML="No open trades"; document.getElementById('histList').innerHTML="No history yet"; return; }
+ let h=""; trades.slice().reverse().forEach(t=>{
+  h+=`<div style="background:#0b0e14; padding:8px; border-radius:8px; margin:6px 0; font-size:12px; display:flex; justify-content:space-between"><div><b>${t.type} ${t.pair}</b> ${t.lot} lot @${t.price}<br><small>${t.time}</small></div><div style="color:${t.pnl>0?'#0ecb81':'#f6465d'}">$${t.pnl}</div></div>`;
  });
- document.getElementById('matches').innerHTML=html;
+ document.getElementById('posList').innerHTML=h;
+ document.getElementById('histList').innerHTML=h;
 }
-
-function addBet(gameIdx, type, odd, name){
- let id=gameIdx+"_"+type;
- let existing = slip.find(s=>s.id===id);
- if(existing){
-  slip=slip.filter(s=>s.id!==id);
-  document.getElementById('b'+id).classList.remove('selected');
- } else {
-  slip=slip.filter(s=>!s.id.startsWith(gameIdx+"_"));
-  document.querySelectorAll(`[id^="b${gameIdx}_"]`).forEach(b=>b.classList.remove('selected'));
-  slip.push({id, odd, name, game: games[gameIdx].home+" vs "+games[gameIdx].away, type});
-  document.getElementById('b'+id).classList.add('selected');
- }
- updateSlip();
+function showP(p){
+ document.getElementById('pagePos').style.display=p==='pos'?'block':'none';
+ document.getElementById('pageHist').style.display=p==='hist'?'block':'none';
+ document.getElementById('pageDep').style.display=p==='dep'?'block':'none';
+ document.getElementById('tPos').style.background=p==='pos'?'#f0b90b':'#1a1e2c';
+ document.getElementById('tHist').style.background=p==='hist'?'#f0b90b':'#1a1e2c';
+ document.getElementById('tDep').style.background=p==='dep'?'#f0b90b':'#1a1e2c';
+ document.getElementById('tPos').style.color=p==='pos'?'black':'white';
+ document.getElementById('tHist').style.color=p==='hist'?'black':'white';
+ document.getElementById('tDep').style.color=p==='dep'?'black':'white';
 }
-
-function updateSlip(){
- document.getElementById('count').innerText=slip.length;
- if(slip.length===0){ document.getElementById('slip').classList.remove('show'); return; }
- document.getElementById('slip').classList.add('show');
- let list=""; let totalOdd=1;
- slip.forEach(s=>{ list+=`• ${s.game} - ${s.name} @${s.odd}<br>`; totalOdd*=s.odd; });
- document.getElementById('slipList').innerHTML=list;
- document.getElementById('toWin').innerText=Math.round(totalOdd*100)+" FUN";
-}
-
-function clearSlip(){ slip=[]; document.querySelectorAll('.odds button').forEach(b=>b.classList.remove('selected')); updateSlip(); }
-
-function placeBet(){
- if(coins<100){ alert("Not enough FUN coins! Go to Deposit FUN page"); showPage('deposit'); return; }
- if(slip.length===0) return;
- coins-=100;
- let totalOdd=1; slip.forEach(s=>totalOdd*=s.odd);
- let isWin = Math.random() > 0.45;
- let status = isWin? "WIN ✅" : "LOSE ❌";
- if(isWin) coins+=Math.round(totalOdd*100);
-
- myBets.push({
-  game: slip.length>1? slip.length+" games Multi" : slip[0].game,
-  type: slip.map(s=>s.name+" @"+s.odd).join(", "),
-  stake: 100,
-  win: isWin? Math.round(totalOdd*100) : 0,
-  status: status + (isWin? " - Completed" : " - Completed"),
-  date: new Date().toLocaleString(),
-  ongoing: false
- });
- localStorage.setItem('myBets', JSON.stringify(myBets));
- localStorage.setItem('funCoins', coins);
- document.getElementById('coins').innerText=coins;
- document.getElementById('coins2').innerText=coins;
- alert(isWin? "✅ WIN! You won "+Math.round(totalOdd*100)+" FUN coins!" : "❌ LOSE! You lost 100 FUN - try again");
- clearSlip();
-}
-
-function showPage(p){
- document.getElementById('pageHome').style.display = p==='home'?'block':'none';
- document.getElementById('pageBets').style.display = p==='bets'?'block':'none';
- document.getElementById('pageDeposit').style.display = p==='deposit'?'block':'none';
- document.getElementById('tabHome').style.background = p==='home'?'#22c55e':'#1e3a5f';
- document.getElementById('tabHome').style.color = p==='home'?'black':'white';
- document.getElementById('tabBets').style.background = p==='bets'?'#22c55e':'#1e3a5f';
- document.getElementById('tabBets').style.color = p==='bets'?'black':'white';
- document.getElementById('tabDeposit').style.background = p==='deposit'?'#22c55e':'#1e3a5f';
- document.getElementById('tabDeposit').style.color = p==='deposit'?'black':'white';
- if(p==='bets') renderBets();
- if(p==='deposit') document.getElementById('coins2').innerText=coins;
-}
-
-function renderBets(){
- if(myBets.length===0){ document.getElementById('betsList').innerHTML="<p style='color:#94a3b8'>No bets yet. Go to Home and tap odds to place a fun bet!</p>"; return; }
- let h=""; myBets.slice().reverse().forEach(b=>{
-  h+=`<div style="background:#0a0f1e; padding:10px; border-radius:10px; margin:8px 0; font-size:13px; border-left:3px solid ${b.status.includes('WIN')?'#22c55e':'#ef4444'}"><b>${b.game}</b><br>${b.type}<br><small>Stake: ${b.stake} FUN | Win: ${b.win} FUN | ${b.status}<br>${b.date}</small></div>`;
- });
- document.getElementById('betsList').innerHTML=h;
-}
-
-function addFun(amount){ coins+=amount; localStorage.setItem('funCoins',coins); document.getElementById('coins').innerText=coins; document.getElementById('coins2').innerText=coins; alert("Added "+amount+" FUN coins! New balance: "+coins); }
-function clearAllBets(){ if(confirm("Clear all bet history?")){ myBets=[]; localStorage.setItem('myBets','[]'); renderBets(); } }
-
-init();
+function addBal(a){ balance+=a; localStorage.setItem('exBal',balance); document.getElementById('bal').innerText=balance; document.getElementById('bal2').innerText=balance; alert("Added $"+a+" DEMO"); }
+renderPos();
 </script>
 </body>
 </html>
