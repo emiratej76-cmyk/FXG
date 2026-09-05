@@ -130,7 +130,7 @@ function pay(){
  let amount=document.getElementById('depAmount').value; let email=document.getElementById('userEmail').value;
  if(!amount||!email){alert("Fill all");return;}
  PaystackPop.setup({
-  key: 'REPLACE_WITH_YOUR_FULL_PK_TEST_KEY',
+  key: pk_test_ff0fc4af1d78d716172d600c82f57a135ba653bc'',
   email: email, amount: amount*100, currency: 'GHS', ref: 'SP_'+Date.now(),
   callback:function(r){ balance+=parseFloat(amount); localStorage.setItem('realSportyBal',balance); document.getElementById('bal').innerText=balance.toFixed(2); document.getElementById('payStatus').innerText="✅ GH₵"+amount+" CREDITED!"; setTimeout(closeDep,1200); },
   onClose:function(){document.getElementById('payStatus').innerText="Cancelled";}
