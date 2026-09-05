@@ -55,7 +55,7 @@ function pay(){
  if(!amount||amount<1){alert("Min $1");return;}
  if(!email){alert("Enter email");return;}
  let handler=PaystackPop.setup({
-  key: 'pk_test_ff0c4a1d78d716172d60cdb9f6e1b0c7f9b7c8a', // YOUR PUBLIC KEY - FULL KEY from dashboard
+  'sk_test_78f6e307906cf0696ed5ec7057909003a725a60f // YOUR PUBLIC KEY - FULL KEY from dashboard
   email: email,
   amount: amount*100,
   currency: 'GHS',
