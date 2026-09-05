@@ -70,7 +70,7 @@ function payWithPaystack(){
  if(!email){ alert("Enter email"); return; }
 
  let handler = PaystackPop.setup({
-  key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxx', // <-- REPLACE WITH YOUR PAYSTACK TEST KEY from dashboard.paystack.com
+  key: sk_test_80ecb21638b953457b3f817ce4cb5d4b20e7307f', // <-- REPLACE WITH YOUR PAYSTACK TEST KEY from dashboard.paystack.com
   email: email,
   amount: amount * 100 * 580, // Paystack Ghana - GHS (580 pesewas = $1 approx). For USD use amount*100
   currency: 'GHS',
