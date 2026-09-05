@@ -2,74 +2,60 @@
 <html>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sporty Daily Auto</title>
+<title>Sporty - Home</title>
 <style>
-body{font-family:Arial; background:#0f172a; color:white; margin:0; padding:20px; text-align:center}
-.card{background:#1e293b; border-radius:20px; padding:20px; margin:15px auto; max-width:420px}
-button{background:#22c55e; border:none; padding:12px 18px; border-radius:12px; font-weight:bold; margin:5px; color:white; cursor:pointer}
-button.red{background:#ef4444} button.blue{background:#3b82f6}
-.points{color:#fbbf24; font-size:18px}
+body{margin:0; font-family:Arial; background:#0a0f1e; color:white}
+.header{background:#1a2b4d; padding:12px; display:flex; justify-content:space-between; align-items:center}
+.header b{color:#22c55e; font-size:20px}
+.nav{display:flex; gap:15px; background:#132040; padding:10px; overflow-x:auto; white-space:nowrap}
+.nav span{padding:6px 14px; background:#1e3a5f; border-radius:20px; font-size:13px}
+.nav .active{background:#22c55e; color:black}
+.banner{background:linear-gradient(90deg,#22c55e,#16a34a); margin:10px; border-radius:12px; padding:18px; text-align:center; font-weight:bold}
+.card{background:#17233f; margin:10px; border-radius:12px; padding:12px}
+.league{font-size:12px; color:#94a3b8; margin-bottom:8px}
+.match{display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #1e3a5f; padding:10px 0}
+.odds{display:flex; gap:6px}
+.odds button{background:#25385f; border:none; color:white; padding:8px 12px; border-radius:8px; font-size:12px}
+.odds button.green{background:#22c55e; color:black; font-weight:bold}
+.small{font-size:11px; color:#64748b; text-align:center; padding:15px}
 </style>
 </head>
 <body>
-<h2 style="color:#22c55e">⚽ MY SPORTY - AUTO DAILY</h2>
-<div class="points">📅 Date: <span id="today"></span> | Coins: <span id="coins">1000</span></div>
-<p style="font-size:12px;color:#94a3b8">FUN POINTS ONLY - NO REAL MONEY</p>
+<div class="header"><b>⚽ SPORTY</b><div>💰 <span id="coins">1000</span> FUN</div></div>
+<div class="nav"><span class="active">Football</span><span>Live</span><span>Uzbek League</span><span>Premier</span><span>La Liga</span><span>UCL</span></div>
+<div class="banner">🎉 DAILY BONUS - 100 FUN COINS EVERYDAY! NO REAL MONEY</div>
 
 <div class="card">
-<div id="match" style="font-size:22px; font-weight:bold; margin-bottom:15px"></div>
-<button id="btn1" class="blue"></button>
-<button id="btn2" class="red"></button>
-<button id="btnDraw">Draw - 100</button>
-<div id="result" style="margin-top:15px; font-weight:bold; min-height:20px"></div>
+<div class="league">🏴󐁧󐁢󐁥󐁮󐁧󐁿 Premier League - Today</div>
+<div class="match"><span>Liverpool vs Chelsea<br><small style="color:#fbbf24">Today 19:00</small></span><div class="odds"><button onclick="bet(100)">1<br>2.1</button><button onclick="bet(100)">X<br>3.2</button><button onclick="bet(100)" class="green">2<br>2.8</button></div></div>
+<div class="match"><span>Man City vs Arsenal</span><div class="odds"><button>1<br>1.9</button><button>X<br>3.0</button><button class="green">2<br>4.1</button></div></div>
+<div class="match"><span>Pakhtakor vs Nasaf<br><small style="color:#fbbf24">UPL - Today</small></span><div class="odds"><button>1<br>2.5</button><button>X<br>2.9</button><button class="green">2<br>2.6</button></div></div>
 </div>
 
+<div class="card">
+<div class="league">⭐ Popular - Auto Changes Daily</div>
+<div id="dailyMatch"></div>
+<div id="result" style="margin-top:10px; color:#fbbf24; font-weight:bold"></div>
+<button onclick="resetCoins()" style="background:#fbbf24; color:black; width:100%; padding:10px; border:none; border-radius:10px; margin-top:10px; font-weight:bold">🔄 Reset 1000 Coins (When 0)</button>
+</div>
+
+<div class="small">FUN POINTS ONLY - NO REAL MONEY - NO CASHOUT - GAME FOR FRIENDS<br>Built on HP Windows | miratej76-cmyk.github.io</div>
+
 <script>
-// LIST OF MATCHES - WILL AUTO CHANGE EVERY DAY
-const matches = [
- ["Real Madrid","Barcelona"],
- ["Pakhtakor","Nasaf"],
- ["Man City","Arsenal"],
- ["PSG","Bayern"],
- ["Uzbekistan","Kazakhstan"],
- ["Liverpool","Chelsea"],
- ["Inter Milan","AC Milan"]
-];
-
-let coins = localStorage.getItem('funCoins')? parseInt(localStorage.getItem('funCoins')) : 1000;
-let lastDate = localStorage.getItem('lastDate');
-let today = new Date().toDateString();
-document.getElementById('today').innerText = today;
-document.getElementById('coins').innerText = coins;
-
-// RESET CHECK EVERYDAY
-if(lastDate!== today){
- // new day - give 100 bonus fun coins
- coins += 100;
- localStorage.setItem('funCoins', coins);
- localStorage.setItem('lastDate', today);
+let coins = parseInt(localStorage.getItem('funCoins')||'1000');
+if(coins<=0) coins=1000;
+document.getElementById('coins').innerText=coins;
+let matches=[["Liverpool","Chelsea"],["Pakhtakor","Nasaf"],["Man City","Arsenal"]];
+let idx=new Date().getDate()%matches.length;
+document.getElementById('dailyMatch').innerHTML=`<b>${matches[idx][0]} VS ${matches[idx][1]}</b> - Daily Match`;
+function bet(a){
+ if(coins<a){ alert("Out of fun coins! Click Reset"); return; }
+ coins-=a; let win=Math.random()>0.5; if(win) coins+=a*2;
+ localStorage.setItem('funCoins',coins);
+ document.getElementById('coins').innerText=coins;
+ document.getElementById('result').innerText= win? `✅ WIN! +${a*2} fun coins` : `❌ LOSE! -${a} fun coins`;
 }
-
-// PICK MATCH BASED ON DATE - SAME FOR EVERYONE, CHANGES DAILY
-let dayIndex = new Date().getDate() % matches.length; // 0-6 based on date
-let todayMatch = matches[dayIndex];
-document.getElementById('match').innerHTML = `${todayMatch[0]} <span style="color:#fbbf24">VS</span> ${todayMatch[1]}`;
-document.getElementById('btn1').innerText = todayMatch[0] + " - 100";
-document.getElementById('btn2').innerText = todayMatch[1] + " - 100";
-document.getElementById('btn1').onclick = () => bet(todayMatch[0], 100);
-document.getElementById('btn2').onclick = () => bet(todayMatch[1], 100);
-
-function bet(team, amount){
- if(coins < amount){ alert("No fun coins left! Wait tomorrow for bonus"); return; }
- coins -= amount;
- let winner = [todayMatch[0], todayMatch[1], "Draw"][Math.floor(Math.random()*3)];
- let msg = team===winner? `✅ WIN! Winner: ${winner}. +${amount*2} coins` : `❌ LOSE! Winner: ${winner}. -${amount} coins`;
- if(team===winner) coins += amount*2;
- localStorage.setItem('funCoins', coins);
- document.getElementById('coins').innerText = coins;
- document.getElementById('result').innerText = msg;
-}
-document.getElementById('btnDraw').onclick = () => bet('Draw', 100);
+function resetCoins(){ localStorage.setItem('funCoins','1000'); location.reload(); }
 </script>
 </body>
 </html>
