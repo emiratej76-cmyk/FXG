@@ -2,104 +2,87 @@
 <html>
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MY EXNESS GH - AUTO</title>
+<title>MY EXNESS GH AUTO</title>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
-body{margin:0; font-family:Arial; background:#0b0e14; color:white}
-.header{background:#12151f; padding:12px; display:flex; justify-content:space-between}
-.balance{color:#f0b90b; font-weight:bold}
-.tabsTop{display:flex; gap:6px; padding:8px}
-.tabsTop button{flex:1; padding:12px; border:none; border-radius:8px; font-weight:bold}
-.card{background:#1a1e2c; margin:8px; border-radius:12px; padding:12px}
-.sellBtn{background:#f6465d; color:white; border:none; padding:14px; border-radius:8px; flex:1; font-weight:bold}
-.buyBtn{background:#0ecb81; color:white; border:none; padding:14px; border-radius:8px; flex:1; font-weight:bold}
-input{width:100%; padding:12px; background:#0b0e14; border:1px solid #2a2e3e; color:white; border-radius:8px; margin:6px 0; box-sizing:border-box}
-.btn{width:100%; padding:14px; border:none; border-radius:10px; font-weight:bold; margin-top:8px; cursor:pointer}
+body{margin:0;font-family:Arial;background:#0b0e14;color:white}
+.header{background:#12151f;padding:12px;display:flex;justify-content:space-between}
+.balance{color:#f0b90b;font-weight:bold}
+.tabsTop{display:flex;gap:6px;padding:8px}
+.tabsTop button{flex:1;padding:12px;border:none;border-radius:8px;font-weight:bold}
+.card{background:#1a1e2c;margin:8px;border-radius:12px;padding:12px}
+.sellBtn{background:#f6465d;color:white;border:none;padding:14px;border-radius:8px;flex:1;font-weight:bold}
+.buyBtn{background:#0ecb81;color:white;border:none;padding:14px;border-radius:8px;flex:1;font-weight:bold}
+input{width:100%;padding:12px;background:#0b0e14;border:1px solid #2a2e3e;color:white;border-radius:8px;margin:6px 0;box-sizing:border-box}
+.btn{width:100%;padding:14px;border:none;border-radius:10px;font-weight:bold;margin-top:8px;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="header"><b style="color:#f0b90b">MY EXNESS GH AUTO</b><div class="balance">$<span id="bal">0</span> DEMO</div></div>
-
 <div class="tabsTop">
-<button onclick="showP('trade')" id="tTrade" style="background:#f0b90b; color:black">Trade</button>
-<button onclick="showP('dep')" id="tDep" style="background:#1a1e2c; color:white">Deposit $1+</button>
+<button onclick="showP('trade')" id="tTrade" style="background:#f0b90b;color:black">Trade</button>
+<button onclick="showP('dep')" id="tDep" style="background:#1a1e2c;color:white">Deposit $1+</button>
 </div>
-
 <div id="pageTrade">
-<div class="card" style="height:360px; padding:0; overflow:hidden"><div id="tv" style="height:100%"></div></div>
+<div class="card" style="height:360px;padding:0;overflow:hidden"><div id="tv" style="height:100%"></div></div>
 <div class="card">
-<div style="display:flex; gap:8px"><button class="sellBtn" onclick="trade('SELL')">SELL</button><button class="buyBtn" onclick="trade('BUY')">BUY XAUUSD</button></div>
+<div style="display:flex;gap:8px"><button class="sellBtn" onclick="trade('SELL')">SELL</button><button class="buyBtn" onclick="trade('BUY')">BUY XAUUSD</button></div>
 <div id="posList" style="margin-top:10px"></div>
 </div>
 </div>
-
 <div id="pageDep" style="display:none">
 <div class="card">
-<h3>⚡ Auto Deposit - Instant Credit</h3>
-<p style="font-size:12px; color:#0ecb81">TEST MODE - No real money moves - Use test card below</p>
-<p style="font-size:11px; color:#848e9c">Test Card: 4242 4242 4242 4242 | CVV 123 | Exp 12/34 | PIN 1234</p>
-<input id="depAmount" type="number" placeholder="Amount e.g. 10 (Min $1)">
-<input id="userEmail" type="email" placeholder="Your email e.g. kwame@gmail.com">
-<button class="btn" style="background:#f0b90b; color:black" onclick="payWithPaystack()">PAY $1+ & AUTO CREDIT NOW</button>
-<div id="payStatus" style="margin-top:10px; font-size:12px; color:#848e9c"></div>
-<p style="font-size:10px; color:#555; margin-top:10px">When you go LIVE in Ghana, replace pk_test_ with your Paystack Business Live Key. Money will go straight to business account, not personal Neteller.</p>
+<h3>⚡ Auto Deposit - Straight To Account</h3>
+<p style="font-size:12px;color:#0ecb81">TEST MODE - Use test card 4242 4242 4242 4242</p>
+<input id="depAmount" type="number" placeholder="Amount e.g. 10">
+<input id="userEmail" type="email" placeholder="Your email">
+<button class="btn" style="background:#f0b90b;color:black" onclick="pay()">PAY & AUTO CREDIT NOW</button>
+<div id="payStatus" style="margin-top:10px;font-size:12px"></div>
 </div>
 </div>
-
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-let balance = parseFloat(localStorage.getItem('exBalAuto')||'10000');
+let balance=parseFloat(localStorage.getItem('exBal')||'10000');
 document.getElementById('bal').innerText=balance.toFixed(2);
-
-function init(){
- new TradingView.widget({autosize:true, symbol:"GOLD", interval:"15", timezone:"Africa/Accra", theme:"dark", style:"1", locale:"en", container_id:"tv"});
-}
+function init(){ new TradingView.widget({autosize:true,symbol:"GOLD",interval:"15",timezone:"Africa/Accra",theme:"dark",style:"1",locale:"en",container_id:"tv"}); }
 function showP(p){
  document.getElementById('pageTrade').style.display=p==='trade'?'block':'none';
  document.getElementById('pageDep').style.display=p==='dep'?'block':'none';
- document.getElementById('tTrade').style.background=p==='trade'?'#f0b90b':'#1a1e2c';
- document.getElementById('tDep').style.background=p==='dep'?'#f0b90b':'#1a1e2c';
- document.getElementById('tTrade').style.color=p==='trade'?'black':'white';
- document.getElementById('tDep').style.color=p==='dep'?'black':'white';
 }
-
-function payWithPaystack(){
- let amount = document.getElementById('depAmount').value;
- let email = document.getElementById('userEmail').value;
- if(!amount || amount<1){ alert("Min $1"); return; }
- if(!email){ alert("Enter email"); return; }
-
- let handler = PaystackPop.setup({
-  key: sk_test_80ecb21638b953457b3f817ce4cb5d4b20e7307f', // <-- REPLACE WITH YOUR PAYSTACK TEST KEY from dashboard.paystack.com
+function pay(){
+ let amount=document.getElementById('depAmount').value;
+ let email=document.getElementById('userEmail').value;
+ if(!amount||amount<1){alert("Min $1");return;}
+ if(!email){alert("Enter email");return;}
+ let handler=PaystackPop.setup({
+  key: 'pk_test_ff0c4a1d78d716172d60cdb9f6e1b0c7f9b7c8a', // YOUR PUBLIC KEY - FULL KEY from dashboard
   email: email,
-  amount: amount * 100 * 580, // Paystack Ghana - GHS (580 pesewas = $1 approx). For USD use amount*100
+  amount: amount*100,
   currency: 'GHS',
-  ref: 'EXGH_'+Math.floor((Math.random() * 1000000000) + 1),
-  onClose: function(){ document.getElementById('payStatus').innerHTML="Payment window closed"; },
-  callback: function(response){
-   // THIS IS THE AUTO CREDIT MAGIC - Straight to user account!
-   document.getElementById('payStatus').innerHTML="✅ Payment success! Ref: "+response.reference+" - Crediting...";
+  ref: 'EXGH_'+Math.floor(Math.random()*1000000000),
+  onClose:function(){document.getElementById('payStatus').innerHTML="Closed";},
+  callback:function(res){
+   document.getElementById('payStatus').innerHTML="✅ Success "+res.reference+" - Crediting...";
    setTimeout(()=>{
     balance+=parseFloat(amount);
-    localStorage.setItem('exBalAuto', balance);
+    localStorage.setItem('exBal',balance);
     document.getElementById('bal').innerText=balance.toFixed(2);
-    document.getElementById('payStatus').innerHTML="✅ SUCCESS! $"+amount+" credited straight to account! New balance: $"+balance.toFixed(2);
-    alert("Credited $"+amount+" AUTO! No admin needed");
+    document.getElementById('payStatus').innerHTML="✅ $"+amount+" AUTO CREDITED! New: $"+balance.toFixed(2);
+    alert("Credited $"+amount+" AUTO - Straight to account!");
     showP('trade');
-   }, 1500);
+   },1200);
   }
  });
  handler.openIframe();
 }
-
 function trade(type){
- let pnl = (Math.random()*10-4).toFixed(2);
+ let pnl=(Math.random()*10-4).toFixed(2);
  balance+=parseFloat(pnl);
- localStorage.setItem('exBalAuto', balance);
+ localStorage.setItem('exBal',balance);
  document.getElementById('bal').innerText=balance.toFixed(2);
- let color = parseFloat(pnl)>=0?'#0ecb81':'#f6465d';
- let html = `<div style="background:#0b0e14; padding:8px; border-radius:8px; margin:5px 0; display:flex; justify-content:space-between"><span>${type} XAUUSD</span><span style="color:${color}">$${pnl}</span></div>`;
- document.getElementById('posList').innerHTML = html + document.getElementById('posList').innerHTML;
+ let color=parseFloat(pnl)>=0?'#0ecb81':'#f6465d';
+ let html=`<div style="background:#0b0e14;padding:8px;border-radius:8px;margin:5px 0;display:flex;justify-content:space-between"><span>${type} XAUUSD</span><span style="color:${color}">$${pnl}</span></div>`;
+ document.getElementById('posList').innerHTML=html+document.getElementById('posList').innerHTML;
 }
 init();
 </script>
