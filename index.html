@@ -1,65 +1,78 @@
-nt.querySelectorAll('.bottom div').forEach(e=>e.classList.remove('active'));
-  if(p=='Home') document.getElementById('mHome').classList.add('active');
-  if(p=='Open') {document.getElementById('mOpen').classList.add('active'); showOpenBets();}
-  if(p=='Me') {document.getElementById('mMe').classList.add('active'); document.getElementById('balMe').innerText='GHS '+balance.toFixed(2);}
-}
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FB3BET</title>
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#eef1f4;padding-bottom:115px}
+.h{background:#d80000;color:#fff;padding:12px 14px;display:flex;justify-content:space-between;position:sticky;top:0;z-index:10}
+.bal{background:#fff;color:#000;padding:6px 14px;border-radius:20px;font-weight:700;font-size:14px}
+.m2{background:#fff;display:flex;overflow:auto;border-bottom:1px solid #ddd;position:sticky;top:46px;z-index:9}
+.m2 div{padding:12px 14px;font-size:13px;white-space:nowrap;border-bottom:3px solid transparent}
+.m2.on{border-color:#009a4a;color:#009a4a;font-weight:700}
+.promo{margin:8px;background:linear-gradient(90deg,#009a4a,#00bf5e);color:#fff;padding:12px;border-radius:4px;display:flex;justify-content:space-between;font-weight:700;font-size:13px}
+.g{background:#fff;margin-bottom:6px}
+.gh{padding:8px 10px;font-size:11px;color:#777;display:flex;justify-content:space-between;border-bottom:1px solid #f1f1f1}
+.gn{padding:10px 10px 5px 10px;font-weight:700;font-size:14px}
+.od{display:flex}
+.o{flex:1;text-align:center;padding:14px 0;border-top:1px solid #eee;border-right:1px solid #eee;font-weight:700;cursor:pointer}
+.o:last-child{border-right:0}
+.o.sel{background:#d80000;color:#fff}
+.bb{position:fixed;bottom:52px;left:0;right:0;background:#009a4a;color:#fff;padding:13px 14px;display:none;justify-content:space-between;font-weight:700;z-index:20}
+.bot{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #ddd;z-index:20}
+.bot div{flex:1;text-align:center;padding:9px 0;font-size:11px;color:#777}
+.bot.act{color:#d80000;font-weight:700}
+.pg{display:none}.pg.on{display:block}
+.cd{background:#fff;margin:8px;padding:12px;border-radius:4px}
+.btn{width:100%;padding:14px;border:0;color:#fff;font-weight:700;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="h"><b style="font-size:20px">FB3BET</b><span class="bal" id="balt">GHS 0.00</span></div>
+<div class="m2"><div class="on">Football</div><div>Live</div><div>Jackpot</div><div>Virtuals</div><div>Casino</div></div>
 
-function updateTop(){ document.getElementById('balTop').innerText='GHS '+balance.toFixed(2); document.getElementById('balMe').innerText='GHS '+balance.toFixed(2); }
+<div id="pgHome" class="pg on">
+<div class="promo"><span>100% BONUS up to GHS 200</span><span style="background:#fff;color:#009a4a;padding:4px 8px;border-radius:3px">JOIN</span></div>
+<div class="g"><div class="gh"><span>LaLiga - 19:30</span><span>+98</span></div><div class="gn">Villarreal vs La Coruna</div><div class="od"><div class="o" onclick="clk('Villarreal',1.75,this)">1.75</div><div class="o" onclick="clk('Draw VIL',2.95,this)">2.95</div><div class="o" onclick="clk('La Coruna',7,this)">7.00</div></div></div>
+<div class="g"><div class="gh"><span>Premier - 19:30</span><span>+125</span></div><div class="gn">Man City vs Arsenal</div><div class="od"><div class="o" onclick="clk('Man City',2.1,this)">2.10</div><div class="o" onclick="clk('Draw',3.3,this)">3.30</div><div class="o" onclick="clk('Arsenal',3.2,this)">3.20</div></div></div>
+<div class="g"><div class="gh"><span>Ghana PL - 18:00</span><span>+87</span></div><div class="gn">Hearts vs Kotoko</div><div class="od"><div class="o" onclick="clk('Hearts',1.85,this)">1.85</div><div class="o" onclick="clk('Draw GPL',3.1,this)">3.10</div><div class="o" onclick="clk('Kotoko',4.2,this)">4.20</div></div></div>
+</div>
 
-function addBet(team, odd){
-  slip.push({team, odd});
-  localStorage.setItem('fb3_slip', JSON.stringify(slip));
-  let totalOdds = 1; slip.forEach(b=>totalOdds*=b.odd);
-  document.getElementById('betBar').style.display='flex';
-  document.getElementById('betInfo').innerText=slip.length+' bets @ '+totalOdds.toFixed(2);
-}
+<div id="pgOpen" class="pg"><div class="cd"><b>Open Bets</b></div><div id="openList"></div></div>
 
-function placeAll(){
-  if(balance < 1) return deposit();
-  let totalOdds = 1; slip.forEach(b=>totalOdds*=b.odd);
-  if(balance < 1) return alert('Deposit first');
-  balance -= 1;
-  let id = Date.now();
-  bets.push({id, games: [...slip], odds: totalOdds, stake: 1, status:'Pending'});
-  localStorage.setItem('fb3_bets', JSON.stringify(bets));
-  localStorage.setItem('fb3_bal', balance);
-  slip=[]; localStorage.setItem('fb3_slip','[]');
-  document.getElementById('betBar').style.display='none';
-  updateTop(); alert('Bet placed! Go to Open Bets');
-  go('Open');
-}
+<div id="pgMe" class="pg">
+<div class="cd"><small>BALANCE</small><h2 id="balMe" style="margin:6px 0">GHS 0.00</h2><button class="btn" style="background:#009a4a" onclick="deposit()">DEPOSIT MOMO</button><br><br><button class="btn" style="background:#111" onclick="withdraw()">WITHDRAW TO MOMO</button></div>
+<div class="cd"><b>Admin</b><br><br><input id="pw" type="password" placeholder="fb3admin123" style="width:100%;padding:10px"><br><br><button onclick="admin()" style="padding:10px 18px">LOGIN</button><div id="adminBox" style="display:none;margin-top:10px"></div></div>
+</div>
 
-function showOpenBets(){
-  let html=''; if(bets.length==0) html='No bets yet';
-  bets.forEach(b=>{ html+=`<div style="background:white;margin:5px 0;padding:10px">#${b.id} - ${b.games.map(g=>g.team).join(', ')} - GHS ${b.stake} @ ${b.odds.toFixed(2)} = Win GHS ${(b.stake*b.odds).toFixed(2)} - <b>${b.status}</b></div>` });
-  document.getElementById('openBetsList').innerHTML=html;
-}
+<div class="bb" id="betBar"><span id="betInfo"></span><span onclick="placeBet()" style="background:#fff;color:#009a4a;padding:6px 14px;border-radius:3px">BET NOW</span></div>
 
-function deposit(){
-  let amt = prompt('Amount GHS:','1');
-  if(!amt) return;
-  PaystackPop.setup({key:PAYSTACK_KEY,email:'user@fb3bet.com',amount:Math.round(amt*100),currency:'GHS',callback:function(r){ balance+=parseFloat(amt); localStorage.setItem('fb3_bal',balance); updateTop(); alert('Deposited GHS '+amt); },onClose:function(){}}).openIframe();
-}
+<div class="bot">
+<div id="tHome" class="act" onclick="goTab('Home')">Home</div>
+<div onclick="alert('AZ soon')">AZ Menu</div>
+<div onclick="alert('Games soon')">Games</div>
+<div id="tOpen" onclick="goTab('Open')">Open Bets</div>
+<div id="tMe" onclick="goTab('Me')">Me</div>
+</div>
 
-function withdraw(){
-  let amt = prompt('Withdraw amount:'); if(!amt) return;
-  if(parseFloat(amt)>balance) return alert('Low balance');
-  let momo = prompt('MoMo number:'); if(!momo) return;
-  balance-=parseFloat(amt); localStorage.setItem('fb3_bal',balance); updateTop();
-  alert('Withdraw request GHS '+amt+' to '+momo+' - Admin will pay manually from Paystack Transfers');
-}
-
-function showAdmin(){
-  if(document.getElementById('pass').value!='fb3admin123') return alert('Wrong password');
-  document.getElementById('adminArea').style.display='block';
-  let html=''; bets.forEach((b,i)=>{ html+=`<div style="background:white;padding:8px;margin:3px">${b.games.map(g=>g.team).join(',')} - <button onclick="makeWin(${i})">MAKE WIN</button> <button onclick="makeLose(${i})">LOSE</button> Status:${b.status}</div>` });
-  document.getElementById('adminBets').innerHTML=html;
-}
-function makeWin(i){ balance+=bets[i].stake*bets[i].odds; bets[i].status='WON'; localStorage.setItem('fb3_bets',JSON.stringify(bets)); localStorage.setItem('fb3_bal',balance); updateTop(); showAdmin(); showOpenBets(); alert('Winner paid GHS '+(bets[i].stake*bets[i].odds)); }
-function makeLose(i){ bets[i].status='LOST'; localStorage.setItem('fb3_bets',JSON.stringify(bets)); showAdmin(); showOpenBets(); }
-function clearAll(){ if(confirm('Clear everything?')){ localStorage.clear(); location.reload(); } }
-
-updateTop(); showOpenBets();
+<script>
+const PAYSTACK_KEY = "pk_test_ff0fc4af1d78d716172d600c82f57a135ba653bc";
+let balance = parseFloat(localStorage.getItem("fb_bal")||"0");
+let slip = []; let bets = JSON.parse(localStorage.getItem("fb_bets")||"[]");
+function goTab(n){document.querySelectorAll(".pg").forEach(p=>p.classList.remove("on"));document.getElementById("pg"+n).classList.add("on");document.querySelectorAll(".bot div").forEach(d=>d.classList.remove("act"));document.getElementById("t"+n).classList.add("act");if(n=="Open")renderOpen();if(n=="Me")document.getElementById("balMe").innerText="GHS "+balance.toFixed(2);}
+function updateBal(){document.getElementById("balt").innerText="GHS "+balance.toFixed(2);let me=document.getElementById("balMe");if(me)me.innerText="GHS "+balance.toFixed(2);}
+function clk(team,odd,el){if(el.classList.contains("sel")){el.classList.remove("sel");slip=slip.filter(s=>s.team!==team);}else{el.classList.add("sel");slip.push({team,odd});}let total=1;slip.forEach(s=>total*=s.odd);let bar=document.getElementById("betBar");if(slip.length>0){bar.style.display="flex";document.getElementById("betInfo").innerText=slip.length+" bets @ "+total.toFixed(2);}else bar.style.display="none";localStorage.setItem("fb_slip",JSON.stringify(slip));}
+function deposit(){let amt=prompt("Amount GHS:","5");if(!amt)return;if(PAYSTACK_KEY.includes("REPLACE")){balance+=parseFloat(amt);localStorage.setItem("fb_bal",balance);updateBal();alert("TEST GHS "+amt+" added. Add live key for real MoMo");return;}PaystackPop.setup({key:PAYSTACK_KEY,email:"user@fb3bet.com",amount:Math.round(parseFloat(amt)*100),currency:"GHS",callback:function(){balance+=parseFloat(amt);localStorage.setItem("fb_bal",balance);updateBal();alert("Deposited GHS "+amt);}}).openIframe();}
+function withdraw(){let amt=prompt("Withdraw amount:");if(!amt||parseFloat(amt)>balance)return alert("Low");let momo=prompt("MoMo number:");if(!momo)return;balance-=parseFloat(amt);localStorage.setItem("fb_bal",balance);updateBal();alert("Withdraw GHS "+amt+" to "+momo);}
+function placeBet(){if(balance<1)return deposit();let total=1;slip.forEach(s=>total*=s.odd);balance-=1;bets.push({id:Date.now(),games:[...slip],odds:total,stake:1,status:"Pending"});localStorage.setItem("fb_bets",JSON.stringify(bets));localStorage.setItem("fb_bal",balance);slip=[];document.querySelectorAll(".o.sel").forEach(e=>e.classList.remove("sel"));document.getElementById("betBar").style.display="none";updateBal();goTab("Open");}
+function renderOpen(){let html="";if(bets.length==0)html='<div class="cd">No bets yet. Go Home and pick odds.</div>';bets.forEach(b=>{html+='<div class="cd">#'+b.id+'<br>'+b.games.map(g=>g.team).join(", ")+'<br><b>GHS '+b.stake+' @ '+b.odds.toFixed(2)+' = Win GHS '+(b.stake*b.odds).toFixed(2)+'</b> - <b>'+b.status+'</b></div>';});document.getElementById("openList").innerHTML=html;}
+function admin(){if(document.getElementById("pw").value!="fb3admin123")return alert("Wrong");let box=document.getElementById("adminBox");box.style.display="block";let h="";bets.forEach((b,i)=>{h+='<div style="padding:8px;border-bottom:1px solid #eee">'+b.games.map(g=>g.team).join(", ")+' <button onclick="winB('+i+')" style="background:green;color:#fff;padding:5px 10px;border:0">WIN</button> <button onclick="loseB('+i+')" style="background:red;color:#fff;padding:5px 10px;border:0">LOSE</button> '+b.status+'</div>';});h+='<br><button onclick="localStorage.clear();location.reload()" style="background:#000;color:#fff;padding:8px;border:0">CLEAR ALL</button>';box.innerHTML=h;}
+function winB(i){balance+=bets[i].stake*bets[i].odds;bets[i].status="WON";localStorage.setItem("fb_bets",JSON.stringify(bets));localStorage.setItem("fb_bal",balance);updateBal();admin();renderOpen();}
+function loseB(i){bets[i].status="LOST";localStorage.setItem("fb_bets",JSON.stringify(bets));admin();renderOpen();}
+updateBal();renderOpen();
 </script>
 </body>
 </html>
