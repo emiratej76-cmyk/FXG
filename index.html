@@ -1,27 +1,4 @@
-<div class="betbar" id="betBar" style="display:none">
-  <span id="betInfo">0 bets @ 0.00</span>
-  <span onclick="placeAll()">BET NOW</span>
-</div>
-
-<div class="bottom">
-  <div id="mHome" class="active" onclick="go('Home')">Home</div>
-  <div onclick="alert('Coming soon')">AZ Menu</div>
-  <div onclick="alert('Coming soon')">Games</div>
-  <div id="mOpen" onclick="go('Open')">Open Bets</div>
-  <div id="mMe" onclick="go('Me')">Me</div>
-</div>
-
-<script>
-const PAYSTACK_KEY =pk_test_ff0fc4af1d78d716172d600c82f57a135ba653bc '; // CHANGE TO pk_live_...
-
-let balance = parseFloat(localStorage.getItem('fb3_bal')||'0');
-let slip = JSON.parse(localStorage.getItem('fb3_slip')||'[]');
-let bets = JSON.parse(localStorage.getItem('fb3_bets')||'[]');
-
-function go(p){
-  document.querySelectorAll('.page').forEach(e=>e.style.display='none');
-  document.getElementById('page'+p).style.display='block';
-  document.querySelectorAll('.bottom div').forEach(e=>e.classList.remove('active'));
+nt.querySelectorAll('.bottom div').forEach(e=>e.classList.remove('active'));
   if(p=='Home') document.getElementById('mHome').classList.add('active');
   if(p=='Open') {document.getElementById('mOpen').classList.add('active'); showOpenBets();}
   if(p=='Me') {document.getElementById('mMe').classList.add('active'); document.getElementById('balMe').innerText='GHS '+balance.toFixed(2);}
