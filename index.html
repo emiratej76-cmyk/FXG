@@ -1,134 +1,150 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>SportyBet GH</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FB3BET</title>
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <style>
-body{margin:0;font-family:Arial;background:#f2f2f2;padding-bottom:65px}
-.top{background:#e41b23;color:white;display:flex;justify-content:space-between;align-items:center;padding:12px 10px;position:sticky;top:0;z-index:10}
-.bal{background:white;color:black;padding:7px 14px;border-radius:20px;font-weight:800;font-size:13px;border:0}
-.banners{display:flex;gap:6px;overflow-x:auto;padding:8px;background:white}
-.banners div{min-width:90px;height:60px;border-radius:6px;color:white;font-weight:bold;font-size:11px;display:flex;align-items:end;padding:6px}
-.icons{display:flex;justify-content:space-between;background:white;padding:10px 5px;font-size:11px;text-align:center;border-top:1px solid #eee;border-bottom:1px solid #eee}
-.tabs{display:flex;gap:8px;overflow-x:auto;padding:8px;background:white}
-.tabs div{border:1px solid #ddd;border-radius:4px;min-width:85px;padding:8px 4px;text-align:center;font-size:11px;font-weight:bold}
-.tabs.black{background:#222;color:white}
-.filters{display:flex;justify-content:space-between;padding:10px;background:white;font-weight:bold;border-bottom:1px solid #eee}
-.filters.green{color:#00a859;border-bottom:2px solid #00a859}
-.leagues{display:flex;gap:8px;overflow-x:auto;padding:8px;background:white}
-.leagues div{border:1px solid #ddd;border-radius:20px;padding:5px 12px;font-size:12px;white-space:nowrap}
-.leagues.active{background:#00a859;color:white;border-color:#00a859}
-.match{background:white;margin-top:5px}
-.mhead{padding:8px 10px;font-size:11px;color:#666;display:flex;justify-content:space-between}
-.odds{display:flex;gap:1px;background:#ddd}
-.odds button{flex:1;padding:12px 0;border:0;background:#f8f8f8;font-size:13px}
-.odds button.pick{background:#00a859;color:white}
+body{font-family:Arial;background:#f2f2f2;margin:0;padding-bottom:70px}
+.top{background:#e00000;color:white;padding:12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.bal{background:white;color:black;padding:8px 16px;border-radius:20px;font-weight:bold}
+.games{background:white;margin:5px 0;padding:10px}
+.odds{display:flex}
+.odd{flex:1;text-align:center;padding:12px;border:1px solid #ddd}
+.odd:active{background:#e00000;color:white}
+.betbar{position:fixed;bottom:50px;left:0;right:0;background:#00a859;color:white;padding:12px;display:flex;justify-content:space-between;font-weight:bold}
 .bottom{position:fixed;bottom:0;left:0;right:0;background:white;display:flex;border-top:1px solid #ddd}
-.bottom div{flex:1;text-align:center;padding:8px 0;font-size:10px;color:#666}
-.floating{position:fixed;bottom:60px;left:10px;right:10px;background:#00a859;color:white;padding:14px;border-radius:8px;display:none;justify-content:space-between;font-weight:bold;z-index:20}
+.bottom div{flex:1;text-align:center;padding:10px 0;font-size:12px}
+.active{color:#e00000;font-weight:bold}
+.page{display:none;padding:10px}
 </style>
 </head>
 <body>
 
-<div class="top"><b style="font-size:24px;font-style:italic">SportyBet</b><div><span style="margin-right:10px">🔍</span><button class="bal" onclick="document.getElementById('depBox').style.display='block'">GHS <span id="b">0.00</span></button></div></div>
-
-<div class="banners">
-<div style="background:#7b1fa2">Lucky Numbers</div>
-<div style="background:#c62828">Aviator Missions</div>
-<div style="background:#2e7d32">Forest of Fear</div>
-<div style="background:#ef6c00">Crash Mania</div>
-<div style="background:#00796b">AutoBet</div>
+<div class="top">
+  <b>FB3BET</b>
+  <span class="bal" id="balTop">GHS 0.00</span>
 </div>
 
-<div class="icons"><div>⚽<br>All Sports</div><div>📺<br>Live</div><div>🔗<br>Load Code</div><div>✈️<br>Aviator</div><div>V<br>Virtuals</div><div>•••<br>More</div></div>
+<!-- HOME PAGE -->
+<div id="pageHome" class="page" style="display:block">
+  <div class="games"><b>LaLiga • 19:30</b><br><b>Villarreal vs Dep. La Coruna</b><div class="odds"><div class="odd" onclick="addBet('Villarreal',1.75)">1.75</div><div class="odd" onclick="addBet('Draw VIL',2.95)">2.95</div><div class="odd" onclick="addBet('La Coruna',7)">7</div></div></div>
+  <div class="games"><b>Premier • 19:30</b><br><b>Man City vs Arsenal</b><div class="odds"><div class="odd" onclick="addBet('Man City',2.1)">2.1</div><div class="odd" onclick="addBet('Draw MCI',3.3)">3.3</div><div class="odd" onclick="addBet('Arsenal',3.2)">3.2</div></div></div>
+  <div class="games"><b>Ghana GPL • 18:00</b><br><b>Hearts vs Kotoko</b><div class="odds"><div class="odd" onclick="addBet('Hearts',1.85)">1.85</div><div class="odd" onclick="addBet('Draw GPL',3.1)">3.1</div><div class="odd" onclick="addBet('Kotoko',4.2)">4.2</div></div></div>
+  <div class="games"><b>Premier • 21:15</b><br><b>Liverpool vs Chelsea</b><div class="odds"><div class="odd" onclick="addBet('Liverpool',1.95)">1.95</div><div class="odd" onclick="addBet('Draw LIV',3.5)">3.5</div><div class="odd" onclick="addBet('Chelsea',3.8)">3.8</div></div></div>
+</div>
 
-<div class="tabs"><div class="black">TODAY'S FOOTBALL</div><div>FOOTBALL IN NEXT 3 HOURS</div><div>ENGLAND PREMIER LEAGUE</div><div>SPAIN LA LIGA</div></div>
+<!-- OPEN BETS PAGE -->
+<div id="pageOpen" class="page">
+  <h3>Open Bets</h3>
+  <div id="openBetsList">No bets yet</div>
+  <br><button onclick="deposit()" style="width:100%;padding:15px;background:#e00000;color:white;border:none">DEPOSIT GHS</button>
+</div>
 
-<div class="filters"><span>Featured</span><span class="green">Matches</span><span>Games</span><span>Codes</span><span>Virtuals</span></div>
-<div class="leagues"><div class="active">LaLiga</div><div>Premier</div><div>Bundesliga</div><div>GPL</div></div>
+<!-- ME PAGE -->
+<div id="pageMe" class="page">
+  <h3>My Account - FB3BET</h3>
+  <div style="background:white;padding:15px">Balance: <b id="balMe">GHS 0.00</b></div>
+  <br><button onclick="deposit()" style="width:100%;padding:15px;background:#00a859;color:white;border:none">DEPOSIT MoMo / Card</button>
+  <br><br><button onclick="withdraw()" style="width:100%;padding:15px;background:black;color:white;border:none">WITHDRAW TO MOMO</button>
+  <br><br><div style="background:white;padding:10px">
+    <h4>Admin Login</h4>
+    <input id="pass" type="password" placeholder="Password: fb3admin123" style="width:90%;padding:10px">
+    <button onclick="showAdmin()" style="margin-top:10px;padding:10px">Login Admin</button>
+    <div id="adminArea" style="display:none">
+      <h4>All Bets - Click to make WIN</h4>
+      <div id="adminBets"></div>
+      <button onclick="clearAll()" style="background:red;color:white;padding:10px;margin-top:10px">Clear All Data</button>
+    </div>
+  </div>
+</div>
 
-<div id="list"></div>
+<!-- BET BAR -->
+<div class="betbar" id="betBar" style="display:none">
+  <span id="betInfo">0 bets @ 0.00</span>
+  <span onclick="placeAll()">BET NOW</span>
+</div>
 
-<div class="floating" id="float"><span id="fText">0 bets</span><span onclick="place()">BET NOW</span></div>
-
-<div id="depBox" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:50"><div style="background:white;margin:80px 15px;padding:15px;border-radius:10px"><h3>Deposit</h3><input id="am" type="number" placeholder="Amount GHS" style="width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:6px"><input id="em" type="email" placeholder="Email" style="width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:6px"><button onclick="payNow()" style="width:100%;padding:14px;background:#00a859;color:white;border:0;border-radius:6px;font-weight:bold">PAY NOW</button><p id="msg" style="text-align:center;font-size:13px"></p><button onclick="document.getElementById('depBox').style.display='none'" style="width:100%;padding:10px;margin-top:8px;background:#eee;border:0;border-radius:6px">Close</button></div></div>
-
-<div class="bottom"><div>Home</div><div>AZ Menu</div><div>Games</div><div>Open Bets</div><div style="color:#e41b23">Me</div></div>
+<div class="bottom">
+  <div id="mHome" class="active" onclick="go('Home')">Home</div>
+  <div onclick="alert('Coming soon')">AZ Menu</div>
+  <div onclick="alert('Coming soon')">Games</div>
+  <div id="mOpen" onclick="go('Open')">Open Bets</div>
+  <div id="mMe" onclick="go('Me')">Me</div>
+</div>
 
 <script>
-// Balance
-let bal = parseFloat(localStorage.getItem('myBal')||'0');
-document.getElementById('b').innerText = bal.toFixed(2);
+const PAYSTACK_KEY = 'pk_test_ff0fc4af1d78d716172d600c82f57a135ba653bc'; // CHANGE TO pk_live_...
 
-// Matches - 100% will show
-let games = [
- {t:"Villarreal vs Dep. La Coruna", l:"LaLiga • 19:30", o:[1.75,2.95,7.00]},
- {t:"Man City vs Arsenal", l:"Premier League • 19:30", o:[2.10,3.30,3.20]},
- {t:"Hearts vs Kotoko", l:"Ghana GPL • 18:00", o:[1.85,3.10,4.20]},
- {t:"Liverpool vs Chelsea", l:"Premier League • 21:15", o:[1.95,3.50,3.80]},
- {t:"Bayern vs Dortmund", l:"Bundesliga • 19:45", o:[1.70,3.90,4.50]}
-];
+let balance = parseFloat(localStorage.getItem('fb3_bal')||'0');
+let slip = JSON.parse(localStorage.getItem('fb3_slip')||'[]');
+let bets = JSON.parse(localStorage.getItem('fb3_bets')||'[]');
 
-let picks = [];
-let html = "";
-games.forEach((g,i)=>{
- html += `<div class="match"><div class="mhead"><span>${g.l}</span><span>+98</span></div><div style="padding:0 10px 8px;font-weight:bold;font-size:13px">${g.t}</div><div class="odds"><button id="b${i}0" onclick="sel(${i},0)">${g.o[0]}</button><button id="b${i}1" onclick="sel(${i},1)">${g.o[1]}</button><button id="b${i}2" onclick="sel(${i},2)">${g.o[2]}</button></div></div>`;
-});
-document.getElementById('list').innerHTML = html;
-
-function sel(i,o){
- let btn = document.getElementById('b'+i+o);
- let key = i+'-'+o;
- let idx = picks.findIndex(x=>x.key===key);
- if(idx>-1){ picks.splice(idx,1); btn.classList.remove('pick'); }
- else {
-  picks = picks.filter(x=>x.key.split('-')[0]!=String(i));
-  document.getElementById('b'+i+'0').classList.remove('pick');
-  document.getElementById('b'+i+'1').classList.remove('pick');
-  document.getElementById('b'+i+'2').classList.remove('pick');
-  picks.push({key:key, odd:games[i].o[o], txt:games[i].t});
-  btn.classList.add('pick');
- }
- if(picks.length>0){
-  let tot=1; picks.forEach(p=>tot*=p.odd);
-  document.getElementById('fText').innerText = picks.length+' bets @ '+tot.toFixed(2);
-  document.getElementById('float').style.display='flex';
- } else document.getElementById('float').style.display='none';
+function go(p){
+  document.querySelectorAll('.page').forEach(e=>e.style.display='none');
+  document.getElementById('page'+p).style.display='block';
+  document.querySelectorAll('.bottom div').forEach(e=>e.classList.remove('active'));
+  if(p=='Home') document.getElementById('mHome').classList.add('active');
+  if(p=='Open') {document.getElementById('mOpen').classList.add('active'); showOpenBets();}
+  if(p=='Me') {document.getElementById('mMe').classList.add('active'); document.getElementById('balMe').innerText='GHS '+balance.toFixed(2);}
 }
 
-function place(){
- let stake = prompt("Enter stake GHS:");
- if(!stake) return;
- stake = parseFloat(stake);
- if(stake>bal){ alert("Low balance! Deposit first"); document.getElementById('depBox').style.display='block'; return; }
- bal-=stake; localStorage.setItem('myBal',bal); document.getElementById('b').innerText=bal.toFixed(2);
- let tot=1; picks.forEach(p=>tot*=p.odd);
- alert("Bet placed! You can win GHS "+(stake*tot).toFixed(2));
- picks=[]; document.getElementById('float').style.display='none';
- document.querySelectorAll('.odds button').forEach(b=>b.classList.remove('pick'));
+function updateTop(){ document.getElementById('balTop').innerText='GHS '+balance.toFixed(2); document.getElementById('balMe').innerText='GHS '+balance.toFixed(2); }
+
+function addBet(team, odd){
+  slip.push({team, odd});
+  localStorage.setItem('fb3_slip', JSON.stringify(slip));
+  let totalOdds = 1; slip.forEach(b=>totalOdds*=b.odd);
+  document.getElementById('betBar').style.display='flex';
+  document.getElementById('betInfo').innerText=slip.length+' bets @ '+totalOdds.toFixed(2);
 }
 
-function payNow(){
- let amt=document.getElementById('am').value;
- let email=document.getElementById('em').value;
- if(!amt||!email){ alert("Enter amount and email"); return; }
- PaystackPop.setup({
-  key: 'pk_test_ff0fc4af1d78d716172d600c82f57a135ba653bc',
-  email: email,
-  amount: amt*100,
-  currency: 'GHS',
-  ref: 'SPT_'+Date.now(),
-  callback: function(res){
-   bal+=parseFloat(amt);
-   localStorage.setItem('myBal',bal);
-   document.getElementById('b').innerText=bal.toFixed(2);
-   document.getElementById('msg').innerText="SUCCESS! GHS "+amt+" ADDED!";
-   setTimeout(()=>{document.getElementById('depBox').style.display='none';},1500);
-  },
-  onClose: function(){ document.getElementById('msg').innerText="Cancelled"; }
- }).openIframe();
+function placeAll(){
+  if(balance < 1) return deposit();
+  let totalOdds = 1; slip.forEach(b=>totalOdds*=b.odd);
+  if(balance < 1) return alert('Deposit first');
+  balance -= 1;
+  let id = Date.now();
+  bets.push({id, games: [...slip], odds: totalOdds, stake: 1, status:'Pending'});
+  localStorage.setItem('fb3_bets', JSON.stringify(bets));
+  localStorage.setItem('fb3_bal', balance);
+  slip=[]; localStorage.setItem('fb3_slip','[]');
+  document.getElementById('betBar').style.display='none';
+  updateTop(); alert('Bet placed! Go to Open Bets');
+  go('Open');
 }
+
+function showOpenBets(){
+  let html=''; if(bets.length==0) html='No bets yet';
+  bets.forEach(b=>{ html+=`<div style="background:white;margin:5px 0;padding:10px">#${b.id} - ${b.games.map(g=>g.team).join(', ')} - GHS ${b.stake} @ ${b.odds.toFixed(2)} = Win GHS ${(b.stake*b.odds).toFixed(2)} - <b>${b.status}</b></div>` });
+  document.getElementById('openBetsList').innerHTML=html;
+}
+
+function deposit(){
+  let amt = prompt('Amount GHS:','1');
+  if(!amt) return;
+  PaystackPop.setup({key:PAYSTACK_KEY,email:'user@fb3bet.com',amount:Math.round(amt*100),currency:'GHS',callback:function(r){ balance+=parseFloat(amt); localStorage.setItem('fb3_bal',balance); updateTop(); alert('Deposited GHS '+amt); },onClose:function(){}}).openIframe();
+}
+
+function withdraw(){
+  let amt = prompt('Withdraw amount:'); if(!amt) return;
+  if(parseFloat(amt)>balance) return alert('Low balance');
+  let momo = prompt('MoMo number:'); if(!momo) return;
+  balance-=parseFloat(amt); localStorage.setItem('fb3_bal',balance); updateTop();
+  alert('Withdraw request GHS '+amt+' to '+momo+' - Admin will pay manually from Paystack Transfers');
+}
+
+function showAdmin(){
+  if(document.getElementById('pass').value!='fb3admin123') return alert('Wrong password');
+  document.getElementById('adminArea').style.display='block';
+  let html=''; bets.forEach((b,i)=>{ html+=`<div style="background:white;padding:8px;margin:3px">${b.games.map(g=>g.team).join(',')} - <button onclick="makeWin(${i})">MAKE WIN</button> <button onclick="makeLose(${i})">LOSE</button> Status:${b.status}</div>` });
+  document.getElementById('adminBets').innerHTML=html;
+}
+function makeWin(i){ balance+=bets[i].stake*bets[i].odds; bets[i].status='WON'; localStorage.setItem('fb3_bets',JSON.stringify(bets)); localStorage.setItem('fb3_bal',balance); updateTop(); showAdmin(); showOpenBets(); alert('Winner paid GHS '+(bets[i].stake*bets[i].odds)); }
+function makeLose(i){ bets[i].status='LOST'; localStorage.setItem('fb3_bets',JSON.stringify(bets)); showAdmin(); showOpenBets(); }
+function clearAll(){ if(confirm('Clear everything?')){ localStorage.clear(); location.reload(); } }
+
+updateTop(); showOpenBets();
 </script>
 </body>
 </html>
